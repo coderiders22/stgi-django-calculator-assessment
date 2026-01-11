@@ -1,4 +1,3 @@
-
 <template>
   <nav class="navbar" :class="{ scrolled: isScrolled, transparent: isTransparent }">
     <div class="nav-container">
@@ -12,97 +11,64 @@
 
       <!-- Desktop Navigation -->
       <div class="nav-links">
-        <router-link
+        <a
           v-for="link in navLinks"
           :key="link.path"
-          :to="link.path"
+          @click.prevent="handleNavClick(link)"
           class="nav-link"
           :class="{ active: isActive(link.path) }"
+          href="#"
         >
           <component :is="link.icon" :size="18" />
           <span>{{ link.label }}</span>
-        </router-link>
+        </a>
+        
+        <!-- Account Button (Professional Design) - Show for both guest and logged in users -->
+        <a
+          v-if="username || isGuest"
+          @click.prevent="handleNavClick({ path: '/dashboard', isHash: false })"
+          class="nav-link account-link"
+          :class="{ active: $route.path === '/dashboard' }"
+          href="#"
+        >
+          <User :size="18" />
+          <span>Account</span>
+          <ChevronRight :size="16" class="account-arrow" />
+        </a>
       </div>
 
       <!-- Actions -->
       <div class="nav-actions">
-        <!-- ===== GUEST MODE (DESKTOP) ===== -->
-        <div v-if="isGuest && !username" class="user-menu">
-          <button class="user-button guest" @click="userMenuOpen = !userMenuOpen">
-            <div class="user-avatar">
-              <Shield :size="18" />
-            </div>
-            <span class="user-name">Guest Mode</span>
-            <ChevronDown :size="16" :class="{ rotated: userMenuOpen }" />
+        <!-- ===== GUEST MODE BADGE (DESKTOP) ===== -->
+        <template v-if="isGuest && !username">
+          <div class="user-badge guest-badge">
+            <Shield :size="16" />
+            <span>Guest Mode</span>
+          </div>
+          <button class="logout-btn" @click="exitGuest" title="Exit Guest Mode">
+            <LogOut :size="18" />
           </button>
+        </template>
 
-          <transition name="dropdown">
-            <div v-if="userMenuOpen" class="user-dropdown">
-              <div class="dropdown-header">
-                <div class="dropdown-avatar">
-                  <Shield :size="20" />
-                </div>
-                <div class="dropdown-info">
-                  <div class="dropdown-name">Guest Session</div>
-                  <div class="dropdown-email">Limited access</div>
-                </div>
-              </div>
-
-              <div class="dropdown-divider"></div>
-
-              <button class="dropdown-item logout" @click="exitGuest">
-                <LogOut :size="16" />
-                Exit Guest Mode
-              </button>
-            </div>
-          </transition>
-        </div>
+        <!-- ===== LOGGED IN USER BADGE ===== -->
+        <template v-else-if="username">
+          <div class="user-badge user-badge-active">
+            <User :size="16" />
+            <span>{{ username }}</span>
+          </div>
+          <button class="logout-btn" @click="logout" title="Sign Out">
+            <LogOut :size="18" />
+          </button>
+        </template>
 
         <!-- ===== NOT LOGGED IN (DESKTOP) ===== -->
-        <div v-else-if="!username" class="auth-buttons">
+        <div v-else class="auth-buttons">
           <router-link to="/login" class="btn btn-ghost">
             <LogIn :size="16" /> Sign in
           </router-link>
           <router-link to="/register" class="btn btn-primary">
             <Rocket :size="16" /> Get Started
           </router-link>
-        </div>
-
-        <!-- ===== LOGGED IN USER ===== -->
-        <div v-else class="user-menu">
-          <button class="user-button" @click="userMenuOpen = !userMenuOpen">
-            <div class="user-avatar">
-              <User :size="18" />
-            </div>
-            <span class="user-name">{{ username }}</span>
-            <ChevronDown :size="16" :class="{ rotated: userMenuOpen }" />
-          </button>
-
-          <transition name="dropdown">
-            <div v-if="userMenuOpen" class="user-dropdown">
-              <div class="dropdown-header">
-                <div class="dropdown-avatar">
-                  <User :size="20" />
-                </div>
-                <div class="dropdown-info">
-                  <div class="dropdown-name">{{ username }}</div>
-                  <div class="dropdown-email">Authenticated</div>
-                </div>
-              </div>
-
-              <div class="dropdown-divider"></div>
-
-              <router-link to="/dashboard" class="dropdown-item" @click="closeMenus">
-                <LayoutDashboard :size="16" /> Dashboard
-              </router-link>
-
-              <div class="dropdown-divider"></div>
-
-              <button class="dropdown-item logout" @click="logout">
-                <LogOut :size="16" /> Sign out
-              </button>
-            </div>
-          </transition>
         </div>
 
         <!-- Mobile Menu -->
@@ -142,17 +108,30 @@
 
           <!-- Links -->
           <div class="sidebar-links">
-            <router-link
+            <a
               v-for="link in navLinks"
               :key="link.path"
-              :to="link.path"
+              @click.prevent="handleNavClick(link)"
               class="sidebar-link"
               :class="{ active: isActive(link.path) }"
-              @click="mobileMenuOpen = false"
+              href="#"
             >
               <component :is="link.icon" :size="18" />
               {{ link.label }}
-            </router-link>
+            </a>
+            
+            <!-- Account Link (Mobile - Professional Design) -->
+            <a
+              v-if="username || isGuest"
+              @click.prevent="handleNavClick({ path: '/dashboard', isHash: false })"
+              class="sidebar-link account-link-mobile"
+              :class="{ active: $route.path === '/dashboard' }"
+              href="#"
+            >
+              <User :size="18" />
+              Account
+              <ChevronRight :size="18" class="account-arrow-mobile" />
+            </a>
           </div>
 
           <!-- Actions -->
@@ -202,16 +181,20 @@ import {
   User,
   Shield,
   ChevronDown,
+  ChevronRight,
   Rocket,
   LogOut,
   LogIn,
   Menu,
-  X
+  X,
+  Zap,
+  Star
 } from 'lucide-vue-next'
 
 import api from '@/services/api'
 
 export default {
+  name: 'NavbarComponent',
   components: {
     Calculator,
     Home,
@@ -219,11 +202,14 @@ export default {
     User,
     Shield,
     ChevronDown,
+    ChevronRight,
     Rocket,
     LogOut,
     LogIn,
     Menu,
-    X
+    X,
+    Zap,
+    Star
   },
 
   data() {
@@ -231,10 +217,11 @@ export default {
       isScrolled: false,
       mobileMenuOpen: false,
       userMenuOpen: false,
-      username: null,  // 🔥 Use API data instead of localStorage
+      username: null,
       navLinks: [
         { label: 'Home', path: '/', icon: 'Home' },
-        { label: 'Dashboard', path: '/dashboard', icon: 'LayoutDashboard' }
+        { label: 'Features', path: '/#features', icon: 'Zap', isHash: true },
+        { label: 'Access Modes', path: '/#access', icon: 'Star', isHash: true }
       ]
     }
   },
@@ -253,24 +240,21 @@ export default {
       this.isScrolled = window.scrollY > 20
     })
 
-    // 🔥 Fetch user data on mount
     await this.fetchUser()
   },
 
   methods: {
-    // 🔥 Fetch current user from API
     async fetchUser() {
       try {
         const res = await api.get('/auth/me/', { withCredentials: true })
         
         if (res.data.is_authenticated) {
           this.username = res.data.username
-          localStorage.removeItem('is_guest')  // Clear guest mode if authenticated
+          localStorage.removeItem('is_guest')
         } else {
           this.username = null
         }
       } catch (error) {
-      
         this.username = null
       }
     },
@@ -284,9 +268,8 @@ export default {
       try {
         await api.post('/auth/logout/', {}, { withCredentials: true })
       } catch (error) {
-     
+        console.error('Logout error:', error)
       } finally {
-        // Clear all local data
         localStorage.clear()
         this.username = null
         this.closeMenus()
@@ -301,11 +284,40 @@ export default {
     },
 
     isActive(path) {
+      if (path.startsWith('/#')) {
+        return false
+      }
       return this.$route.path === path
+    },
+
+    handleNavClick(link) {
+      if (link.isHash) {
+        const sectionId = link.path.substring(2)
+        
+        if (this.$route.path !== '/') {
+          this.$router.push('/').then(() => {
+            setTimeout(() => {
+              const section = document.getElementById(sectionId)
+              if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
+            }, 100)
+          })
+        } else {
+          const section = document.getElementById(sectionId)
+          if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }
+        }
+        
+        this.closeMenus()
+      } else {
+        this.$router.push(link.path)
+        this.closeMenus()
+      }
     }
   },
 
-  // 🔥 Watch route changes to update user data
   watch: {
     '$route'() {
       this.fetchUser()
@@ -313,7 +325,6 @@ export default {
   }
 }
 </script>
-
 
 <style scoped>
 /* NAVBAR + SIDEBAR MOBILE MENU */
@@ -336,12 +347,14 @@ export default {
   -webkit-backdrop-filter: blur(30px);
   border-bottom: none;
 }
+
 .navbar.scrolled {
   background: rgba(255,255,255,0.98);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
   box-shadow: 0 4px 16px rgba(0,0,0,0.06);
 }
+
 .nav-container {
   max-width: 1480px;
   margin: 0 auto;
@@ -350,7 +363,9 @@ export default {
   align-items: center;
   justify-content: space-between;
   min-height: 70px;
+  gap: 2rem;
 }
+
 /* Logo */
 .logo-wrapper {
   display: flex;
@@ -358,10 +373,13 @@ export default {
   gap: 0.75rem;
   text-decoration: none;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
+
 .logo-wrapper:hover {
   transform: translateY(-2px);
 }
+
 .logo-icon {
   width: 42px;
   height: 42px;
@@ -373,6 +391,7 @@ export default {
   color: white;
   box-shadow: 0 4px 12px rgba(59,130,246,0.2);
 }
+
 .logo-text {
   font-size: 1.4rem;
   font-weight: 800;
@@ -380,12 +399,17 @@ export default {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
 /* Desktop Nav Links */
 .nav-links {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex: 1;
+  justify-content: center;
+  margin: 0 auto;
 }
+
 .nav-link {
   display: flex;
   align-items: center;
@@ -397,149 +421,158 @@ export default {
   text-decoration: none;
   border-radius: 10px;
   transition: all 0.2s ease;
+  cursor: pointer;
 }
+
 .nav-link:hover {
   color: #1e293b;
   background: rgba(59,130,246,0.06);
 }
+
 .nav-link.active {
   color: #3b82f6;
   background: rgba(59,130,246,0.08);
   font-weight: 600;
 }
+
+/* Account Link - Inviting Theme-Matching Style with Arrow */
+.nav-link.account-link {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.1) 100%);
+  color: #6366f1;
+  font-weight: 600;
+  border: 1.5px solid rgba(99, 102, 241, 0.3);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15),
+              inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  margin-left: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nav-link.account-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.15), transparent);
+  transition: left 0.6s ease;
+}
+
+.nav-link.account-link:hover::before {
+  left: 100%;
+}
+
+.nav-link.account-link:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.18) 0%, rgba(139, 92, 246, 0.15) 100%);
+  border-color: rgba(99, 102, 241, 0.5);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3),
+              0 2px 8px rgba(139, 92, 246, 0.2),
+              inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  color: #4f46e5;
+}
+
+.nav-link.account-link:active {
+  transform: translateY(-1px) scale(1);
+}
+
+.nav-link.account-link.active {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.22) 0%, rgba(139, 92, 246, 0.18) 100%);
+  border-color: rgba(99, 102, 241, 0.6);
+  color: #4338ca;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35),
+              inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.account-arrow {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-left: 0.25rem;
+  animation: arrowMoveContinuous 1.2s ease-in-out infinite;
+}
+
+@keyframes arrowMoveContinuous {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(6px);
+  }
+}
+
 /* Desktop Auth & User Menu */
 .nav-actions {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-shrink: 0;
+  margin-left: auto;
 }
+
+/* User Badge (Simple indicator) */
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.guest-badge {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));
+  border: 1px dashed #f59e0b;
+  color: #92400e;
+}
+
+.guest-badge svg {
+  color: #d97706;
+}
+
+.user-badge-active {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(37, 99, 235, 0.08));
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #1e40af;
+}
+
+.user-badge-active svg {
+  color: #3b82f6;
+}
+
+/* Logout Button */
+.logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  transform: translateY(-2px);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+}
+
 .auth-buttons {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
-.user-menu {
-  position: relative;
-  display: flex;
-}
-.user-button {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.6rem 1rem;
-  background: rgba(59,130,246,0.06);
-  border: 1px solid rgba(59,130,246,0.15);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-.user-button:hover {
-  background: rgba(59,130,246,0.1);
-  border-color: rgba(59,130,246,0.25);
-  transform: translateY(-2px);
-}
-.user-avatar {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-.user-name {
-  font-weight: 600;
-  color: #1e293b;
-}
-.chevron {
-  color: #64748b;
-  transition: transform 0.3s ease;
-}
-.chevron.rotated {
-  transform: rotate(180deg);
-}
-.user-dropdown {
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  right: 0;
-  width: 280px;
-  background: white;
-  border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 16px;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
-  overflow: hidden;
-}
-.dropdown-header {
-  padding: 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  background: linear-gradient(135deg, rgba(59,130,246,0.05), rgba(139,92,246,0.05));
-}
-.dropdown-avatar {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-.dropdown-info {
-  flex: 1;
-}
-.dropdown-name {
-  font-weight: 600;
-  color: #1e293b;
-  font-size: 1rem;
-}
-.dropdown-email {
-  font-size: 0.85rem;
-  color: #64748b;
-}
-.dropdown-divider {
-  height: 1px;
-  background: rgba(0,0,0,0.06);
-  margin: 0.5rem 0;
-}
-.dropdown-section {
-  padding: 0.5rem;
-}
-.dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  color: #64748b;
-  font-size: 0.95rem;
-  font-weight: 500;
-  text-decoration: none;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-.dropdown-item:hover {
-  background: rgba(59,130,246,0.06);
-  color: #1e293b;
-}
-.dropdown-item.logout {
-  color: #ef4444;
-}
-.dropdown-item.logout:hover {
-  background: rgba(239,68,68,0.06);
-}
-.dropdown-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 999996;
-  background: transparent;
-}
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -551,26 +584,31 @@ export default {
   text-decoration: none;
   transition: all 0.3s ease;
 }
+
 .btn-ghost {
   background: transparent;
   border: 1.5px solid rgba(0,0,0,0.15);
   color: #1e293b;
 }
+
 .btn-ghost:hover {
   background: rgba(0,0,0,0.04);
   border-color: rgba(0,0,0,0.25);
 }
+
 .btn-primary {
   background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;
   border: none;
   box-shadow: 0 4px 12px rgba(59,130,246,0.25);
 }
+
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(59,130,246,0.35);
 }
-/* Mobile Menu Toggle - Hidden by Default on Desktop */
+
+/* Mobile Menu Toggle */
 .mobile-menu-btn {
   background: none;
   border: none;
@@ -581,12 +619,12 @@ export default {
   transition: background 0.2s;
   display: none;
 }
+
 .mobile-menu-btn:hover {
   background: rgba(0,0,0,0.05);
 }
-/* ================================================
-   MOBILE SIDEBAR - WITH !IMPORTANT FLAGS
-=============================================== */
+
+/* MOBILE SIDEBAR */
 .mobile-sidebar {
   position: fixed !important;
   top: 0 !important;
@@ -601,6 +639,7 @@ export default {
   flex-direction: column;
   overflow-y: auto;
 }
+
 .sidebar-header {
   display: flex;
   align-items: center;
@@ -609,29 +648,7 @@ export default {
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.03), rgba(139, 92, 246, 0.03));
 }
-.sidebar-logo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-.sidebar-logo-icon {
-  width: 44px;
-  height: 44px;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
-}
-.sidebar-logo-text {
-  font-size: 1.35rem;
-  font-weight: 800;
-  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+
 .sidebar-close-btn {
   background: rgba(0, 0, 0, 0.05);
   border: none;
@@ -645,10 +662,12 @@ export default {
   cursor: pointer;
   transition: all 0.2s;
 }
+
 .sidebar-close-btn:hover {
   background: rgba(0, 0, 0, 0.1);
   color: #1e293b;
 }
+
 .sidebar-user-info {
   display: flex;
   align-items: center;
@@ -659,6 +678,12 @@ export default {
   border-radius: 14px;
   border: 1px solid rgba(59, 130, 246, 0.12);
 }
+
+.sidebar-user-info.guest {
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));
+}
+
 .user-avatar-large {
   width: 52px;
   height: 52px;
@@ -670,10 +695,12 @@ export default {
   color: white;
   flex-shrink: 0;
 }
+
 .user-details {
   flex: 1;
   min-width: 0;
 }
+
 .user-details .user-name {
   font-size: 1.1rem;
   font-weight: 700;
@@ -683,6 +710,7 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .user-details .user-email {
   color: #64748b;
   font-size: 0.85rem;
@@ -690,19 +718,12 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .sidebar-links {
   flex: 1;
-  padding: 0.5rem 1.25rem;
+  padding: 0.5rem 1.25rem 1.5rem;
 }
-.sidebar-section-title {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #94a3b8;
-  margin-bottom: 0.75rem;
-  padding: 0 0.5rem;
-}
+
 .sidebar-link {
   display: flex;
   align-items: center;
@@ -715,30 +736,95 @@ export default {
   text-decoration: none;
   border-radius: 10px;
   transition: all 0.2s;
+  cursor: pointer;
 }
+
 .sidebar-link:hover {
   background: rgba(59, 130, 246, 0.08);
   color: #1e293b;
 }
+
 .sidebar-link.active {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(139, 92, 246, 0.08));
   color: #3b82f6;
   font-weight: 600;
 }
-.sidebar-actions {
-  padding: 1.25rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-  background: rgba(0, 0, 0, 0.01);
+
+/* Account Link Mobile - Inviting Theme-Matching Style with Arrow */
+.sidebar-link.account-link-mobile {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.12) 100%);
+  color: #6366f1;
+  font-weight: 700;
+  border: 2px solid rgba(99, 102, 241, 0.35);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2),
+              inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  margin-top: 0.75rem;
+  padding: 1rem 1.2rem;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
+
+.sidebar-link.account-link-mobile::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.sidebar-link.account-link-mobile:hover::before {
+  left: 100%;
+}
+
+.sidebar-link.account-link-mobile:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.22) 0%, rgba(139, 92, 246, 0.18) 100%);
+  border-color: rgba(99, 102, 241, 0.55);
+  transform: translateX(6px) scale(1.02);
+  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.35),
+              0 3px 10px rgba(139, 92, 246, 0.25),
+              inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  color: #4f46e5;
+}
+
+.sidebar-link.account-link-mobile:active {
+  transform: translateX(3px) scale(1);
+}
+
+.sidebar-link.account-link-mobile.active {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.28) 0%, rgba(139, 92, 246, 0.22) 100%);
+  border-color: rgba(99, 102, 241, 0.65);
+  color: #4338ca;
+  box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.account-arrow-mobile {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-left: auto;
+  animation: arrowMoveContinuous 1.2s ease-in-out infinite;
+}
+
+.sidebar-actions {
+  margin-top: auto;
+  padding: 1.25rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+}
+
 .sidebar-logout {
   width: 100%;
-  padding: 0.875rem;
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 0.8rem;
   border-radius: 10px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  font-weight: 700;
   color: #ef4444;
-  font-weight: 600;
-  font-size: 0.975rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -746,18 +832,21 @@ export default {
   gap: 0.625rem;
   transition: all 0.2s;
 }
+
 .sidebar-logout:hover {
   background: rgba(239, 68, 68, 0.15);
 }
+
 .sidebar-auth-buttons {
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
+  gap: 0.75rem;
 }
+
 .sidebar-btn {
   padding: 0.875rem 1rem;
   border-radius: 10px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.975rem;
   text-align: center;
   text-decoration: none;
@@ -767,24 +856,29 @@ export default {
   gap: 0.625rem;
   transition: all 0.2s;
 }
+
 .sidebar-btn.ghost {
   background: transparent;
   border: 2px solid #3b82f6;
   color: #3b82f6;
 }
+
 .sidebar-btn.ghost:hover {
   background: rgba(59, 130, 246, 0.08);
 }
+
 .sidebar-btn.primary {
   background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;
   border: none;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
+
 .sidebar-btn.primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(59, 130, 246, 0.4);
 }
+
 /* Sidebar Backdrop */
 .sidebar-backdrop {
   position: fixed !important;
@@ -793,37 +887,24 @@ export default {
   z-index: 2147483646 !important;
   backdrop-filter: blur(4px);
 }
+
 /* Animations */
 .sidebar-enter-active,
 .sidebar-leave-active {
   transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
+
 .sidebar-enter-from,
 .sidebar-leave-to {
   transform: translateX(100%);
 }
-.backdrop-enter-active,
-.backdrop-leave-active {
-  transition: opacity 0.3s ease;
-}
-.backdrop-enter-from,
-.backdrop-leave-to {
-  opacity: 0;
-}
-.dropdown-enter-active,
-.dropdown-leave-active {
-  transition: all 0.2s ease;
-}
-.dropdown-enter-from,
-.dropdown-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .nav-links,
   .auth-buttons,
-  .user-menu {
+  .user-badge,
+  .logout-btn {
     display: none;
   }
  
@@ -831,6 +912,7 @@ export default {
     display: block;
   }
 }
+
 @media (max-width: 380px) {
   .mobile-sidebar {
     width: 280px;
@@ -838,15 +920,6 @@ export default {
  
   .sidebar-header {
     padding: 1.25rem 1rem;
-  }
- 
-  .sidebar-logo-icon {
-    width: 40px;
-    height: 40px;
-  }
- 
-  .sidebar-logo-text {
-    font-size: 1.2rem;
   }
  
   .sidebar-user-info {
@@ -867,180 +940,4 @@ export default {
     padding: 1rem;
   }
 }
-/* ===============================
-   GUEST MODE BADGE
-================================ */
-/* ===============================
-   MOBILE GUEST MODE CARD
-================================ */
-.sidebar-user-info.guest {
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-  padding: 1rem 1.25rem;
-  margin: 1rem 1.25rem;
-  border-radius: 14px;
-  background: linear-gradient(
-    135deg,
-    rgba(59, 130, 246, 0.12),
-    rgba(139, 92, 246, 0.10)
-  );
-  border: 1px solid rgba(59, 130, 246, 0.25);
-}
-
-.sidebar-user-info.guest .user-avatar-large {
-  background: linear-gradient(135deg, #6366f1, #3b82f6);
-}
-
-.sidebar-user-info.guest .user-name {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #1e293b;
-}
-
-.sidebar-user-info.guest .user-email {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #475569;
-}
-/* ===============================
-   SIDEBAR AUTH ACTIONS (BOTTOM)
-================================ */
-.sidebar-actions {
-  margin-top: auto; /* 👈 pushes to bottom */
-  padding: 1.25rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-  background: #ffffff;
-}
-/* Guest auth buttons */
-.sidebar-auth-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-/* Login */
-.sidebar-btn.ghost {
-  border: 2px solid #3b82f6;
-  color: #3b82f6;
-  font-weight: 700;
-  background: transparent;
-}
-
-.sidebar-btn.ghost:hover {
-  background: rgba(59, 130, 246, 0.08);
-}
-
-/* Signup */
-.sidebar-btn.primary {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
-  font-weight: 700;
-}
-
-.sidebar-btn.primary:hover {
-  transform: translateY(-2px);
-}
-.sidebar-links {
-  padding-bottom: 1.5rem;
-}
-
-/* Name + badge wrapper */
-.user-name-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1.1;
-}
-
-/* Username text */
-.user-name {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: #1e293b;
-}
-/* Dropdown positioning fix */
-.user-dropdown {
-  margin-top: 0.75rem;
-  right: 0;
-  min-width: 260px;
-  z-index: 999999;
-}
-/* Guest dropdown CTA */
-.dropdown-item.guest-cta {
-  font-weight: 600;
-  color: #1e293b;
-}
-
-/* Primary action */
-.dropdown-item.guest-primary {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
-  margin: 0.5rem;
-  border-radius: 10px;
-}
-
-.dropdown-item.guest-primary:hover {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-}
-
-/* Secondary action */
-.dropdown-item.guest-secondary {
-  margin: 0 0.5rem 0.5rem;
-}
-/* ===============================
-   MOBILE GUEST BADGE
-================================ */
-.sidebar-user-info.guest {
-  border: 1px solid rgba(245, 158, 11, 0.25);
-  background: linear-gradient(
-    135deg,
-    rgba(245, 158, 11, 0.12),
-    rgba(217, 119, 6, 0.08)
-  );
-}
-
-.sidebar-user-info.guest .user-name {
-  font-weight: 800;
-  color: #92400e;
-}
-
-.sidebar-user-info.guest .user-email {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #b45309;
-}
-@keyframes guestPulse {
-  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
-  70% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
-}
-
-.guest-badge {
-  animation: guestPulse 2.5s infinite;
-}
-.user-button.guest {
-  border: 1px dashed #f59e0b;
-  background: rgba(245, 158, 11, 0.1);
-}
-
-.sidebar-user-info.guest {
-  border: 1px solid rgba(245, 158, 11, 0.4);
-  background: linear-gradient(
-    135deg,
-    rgba(245, 158, 11, 0.15),
-    rgba(217, 119, 6, 0.1)
-  );
-}
-
-.sidebar-logout {
-  width: 100%;
-  padding: 0.8rem;
-  border-radius: 10px;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  font-weight: 700;
-}
-
-
 </style>

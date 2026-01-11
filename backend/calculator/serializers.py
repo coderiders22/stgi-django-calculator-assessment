@@ -8,13 +8,12 @@ class CalculationHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = CalculationHistory
         fields = [
-            'id',
-            'user',
-            'session_key',
-            'operand1',
-            'operand2',
-            'operator',
-            'result',
-            'created_at'
+            "id",
+            "operand1",
+            "operand2",
+            "operator",
+            "result",
+            "note",       
+            "created_at",
         ]
         read_only_fields = ['id', 'created_at']

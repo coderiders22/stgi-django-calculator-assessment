@@ -14,12 +14,16 @@
           Limited access features enabled
         </div>
         <div class="banner-description" v-else>
-          Congratulations! Aap ab saare premium features ko full access kar sakte hai.
+        Congratulations! You now have full access to all premium features.
         </div>
         <div class="feature-list" v-if="isGuest">
           <div class="feature-item success">
             <CheckCircle2 :size="16" />
             <span>View last 10 calculations</span>
+          </div>
+          <div class="feature-item success">
+            <CheckCircle2 :size="16" />
+            <span>Add notes to 2 calculations</span>
           </div>
           <div class="feature-item disabled">
             <XCircle :size="16" />
@@ -37,11 +41,11 @@
           </div>
           <div class="feature-item success">
             <CheckCircle2 :size="16" />
-            <span>Full history access</span>
+            <span>Unlimited notes</span>
           </div>
           <div class="feature-item success">
             <CheckCircle2 :size="16" />
-            <span>Advanced features unlocked</span>
+            <span>Full history access</span>
           </div>
         </div>
       </div>
@@ -124,6 +128,21 @@
           @keyup.enter="calculate"
         />
       </div>
+
+      <!-- Note Input -->
+      <div class="input-group">
+        <label class="input-label">
+          <FileText :size="14" /> Note (Optional)
+        </label>
+        <textarea
+          v-model="note"
+          class="note-field"
+          placeholder="Add a note about this calculation... (max 500 characters)"
+          maxlength="500"
+          rows="2"
+        ></textarea>
+        <div class="char-count">{{ note.length }}/500</div>
+      </div>
     </div>
 
     <!-- Calculate Button -->
@@ -193,7 +212,8 @@ import {
   Asterisk,
   Divide,
   ShieldAlert,
-  XCircle
+  XCircle,
+  FileText
 } from 'lucide-vue-next'
 
 export default {
@@ -214,7 +234,8 @@ export default {
     Asterisk,
     Divide,
     ShieldAlert,
-    XCircle
+    XCircle,
+    FileText
   },
   data() {
     return {
@@ -228,6 +249,7 @@ export default {
       modalType: 'error',
       copied: false,
       username: null,
+      note: '', 
       operators: [
         { value: '+', display: '+', icon: 'Plus' },
         { value: '-', display: '−', icon: 'Minus' },
@@ -241,19 +263,17 @@ export default {
       return this.a !== null && this.b !== null
     },
     isGuest() {
-      // User is guest if not authenticated
       return !this.username && localStorage.getItem('is_guest') === 'true'
     }
   },
   methods: {
-    // Fetch current user from API (just like Navbar)
     async fetchUser() {
       try {
         const res = await api.get('/auth/me/', { withCredentials: true })
         
         if (res.data.is_authenticated) {
           this.username = res.data.username
-          localStorage.removeItem('is_guest') // Clear guest mode if authenticated
+          localStorage.removeItem('is_guest')
         } else {
           this.username = null
         }
@@ -281,19 +301,18 @@ export default {
         const res = await api.post('/calculate/', {
           operand1: this.a,
           operand2: this.b,
-          operator: this.op
+          operator: this.op,
+          note: this.note  //  Send note
         })
         this.result = res.data.result
+        this.note = ''  // Clear note after successful calculation
         this.$emit('calculated')
       } catch (err) {
         if (err.response?.status === 403) {
-          // Guest limit reached
-          this.modalText = err.response.data.error || 'Guest limit reached. Login to unlock full access.'
+          this.modalText = err.response.data.error || 'Limit reached. Login to unlock full access.'
           this.modalType = 'warning'
         } else {
-          this.modalText =
-            err.response?.data?.error ||
-            'Calculation failed.'
+          this.modalText = err.response?.data?.error || 'Calculation failed.'
           this.modalType = 'error'
         }
         this.showModal = true
@@ -319,6 +338,7 @@ export default {
       this.b = null
       this.op = '+'
       this.result = null
+      this.note = ''  // Clear note
       this.$refs.firstInput?.focus()
     },
     focusSecondInput() {
@@ -326,11 +346,9 @@ export default {
     }
   },
   async mounted() {
-    // Fetch user data when component loads
     await this.fetchUser()
   },
   watch: {
-    // Watch route changes to update user data
     '$route'() {
       this.fetchUser()
     }
@@ -617,6 +635,41 @@ export default {
 .input-field::placeholder {
   color: var(--text-muted);
   font-weight: 400;
+}
+
+/* Note Field Styling */
+.note-field {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: inherit;
+  resize: vertical;
+  min-height: 60px;
+  transition: all 0.3s ease;
+}
+
+.note-field:focus {
+  outline: none;
+  background: white;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.note-field::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.char-count {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-align: right;
+  margin-top: 0.25rem;
 }
 
 /* Operator Buttons */

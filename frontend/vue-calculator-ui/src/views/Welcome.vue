@@ -9,25 +9,28 @@
         <div class="hero-content">
           <div class="badge-wrapper">
             <div class="badge">
-              <span class="badge-icon"></span>
-              <span>Django • Vue.js • STGI Assessment Project • 2026</span>
+              <Sparkles :size="16" class="badge-icon" />
+              <span>Django • Vue.js • STGI Assessment • Full-Stack Calculator • 2026</span>
             </div>
           </div>
           <h1 class="hero-title">
-            <span class="title-line">Simple. Secure. Reliable.</span>
+            <span class="title-line">Professional. Powerful. Precise.</span>
             <span class="title-gradient">
               CalculatorPro<span class="dot">.</span>
             </span>
           </h1>
           <p class="hero-description">
-            A Django-based calculator application with
-            user authentication, guest sessions, and
-            persistent calculation history.
+            A feature-rich Django calculator with smart notes, weekly analytics, 
+            dual access modes, and intelligent history management. Experience the 
+            difference between guest and premium access.
           </p>
           <div class="hero-actions">
             <!-- Logged in user -->
             <template v-if="isAuthenticated">
-              <button class="btn btn-primary" @click="goDashboard">
+              <button 
+                class="btn btn-primary" 
+                onclick="window.location.href='/dashboard'"
+              >
                 <span>Go to Dashboard</span>
                 <ArrowRight :size="20" />
               </button>
@@ -35,38 +38,50 @@
 
             <!-- Guest mode (already logged in as guest) -->
             <template v-else-if="isGuest">
-              <button class="btn btn-primary" @click="goDashboard">
+              <button 
+                class="btn btn-primary" 
+                onclick="window.location.href='/dashboard'"
+              >
                 <span>Resume as Guest</span>
                 <ArrowRight :size="20" />
               </button>
-              <button class="btn btn-secondary" @click="goLogin">
-                <span>Login to Save History</span>
+              <button 
+                class="btn btn-secondary" 
+                onclick="localStorage.removeItem('is_guest'); localStorage.removeItem('user'); sessionStorage.clear(); window.location.href='/register';"
+              >
+                <span>Register to Save History</span>
               </button>
             </template>
 
             <!-- Not logged in → Primary: Guest, Secondary: Login -->
             <template v-else>
-              <button class="btn btn-primary" @click="continueAsGuest">
+              <button 
+                class="btn btn-primary" 
+                onclick="localStorage.setItem('is_guest', 'true'); localStorage.removeItem('user'); window.location.href='/dashboard';"
+              >
                 <span>Continue as Guest</span>
                 <ArrowRight :size="20" />
               </button>
-              <button class="btn btn-secondary" @click="goLogin">
-                <span>Login</span>
+              <button 
+                class="btn btn-secondary" 
+                onclick="window.location.href='/register'"
+              >
+                <span>Login for Premium</span>
               </button>
             </template>
           </div>
           <div class="trust-indicators">
             <div class="trust-item">
               <CheckCircle2 :size="16" />
-              <span>User & Guest Modes</span>
+              <span>Guest & Premium Modes</span>
             </div>
             <div class="trust-item">
               <CheckCircle2 :size="16" />
-              <span>Session-based History</span>
+              <span>Smart Notes System</span>
             </div>
             <div class="trust-item">
               <CheckCircle2 :size="16" />
-              <span>REST API Powered</span>
+              <span>Weekly Analytics</span>
             </div>
           </div>
         </div>
@@ -84,6 +99,10 @@
               <div class="calc-display">
                 <div class="calc-operation">125 × 4</div>
                 <div class="calc-result">500</div>
+                <div class="calc-note">
+                  <FileText :size="14" style="display: inline; margin-right: 6px;" />
+                  Monthly revenue calculation
+                </div>
               </div>
               <div class="calc-history">
                 <div class="history-item">
@@ -99,16 +118,122 @@
           </div>
           <!-- FLOATING CARDS -->
           <div class="float-card float-1">
-            <Zap :size="16" />
-            <span>REST APIs</span>
+            <TrendingUp :size="16" />
+            <span>Weekly Stats</span>
           </div>
           <div class="float-card float-2">
-            <Users :size="16" />
-            <span>User & Guest Access</span>
+            <FileText :size="16" />
+            <span>Smart Notes</span>
           </div>
           <div class="float-card float-3">
             <Shield :size="16" />
-            <span>Django Sessions</span>
+            <span>Secure Sessions</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ACCESS COMPARISON ================= -->
+    <section class="comparison-section" id="access">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-badge">Access Modes</div>
+          <h2 class="section-title">
+            Guest vs Premium Access
+          </h2>
+          <p class="section-description">
+            Start free as a guest or unlock unlimited power with premium access.
+          </p>
+        </div>
+        
+        <div class="comparison-grid">
+          <!-- GUEST MODE -->
+          <div class="access-card guest-card">
+            <div class="access-header">
+              <div class="access-icon guest-icon">
+                <User :size="28" />
+              </div>
+              <h3 class="access-title">Guest Mode</h3>
+              <p class="access-subtitle">Try without registration</p>
+            </div>
+            <div class="access-features">
+              <div class="feature-item enabled">
+                <CheckCircle2 :size="18" />
+                <span>Basic calculator operations</span>
+              </div>
+              <div class="feature-item enabled">
+                <CheckCircle2 :size="18" />
+                <span>View last 10 calculations</span>
+              </div>
+              <div class="feature-item enabled">
+                <CheckCircle2 :size="18" />
+                <span>Add notes to 2 calculations</span>
+              </div>
+              <div class="feature-item enabled">
+                <CheckCircle2 :size="18" />
+                <span>Weekly analytics dashboard</span>
+              </div>
+              <div class="feature-item disabled">
+                <XCircle :size="18" />
+                <span>Cannot clear full history</span>
+              </div>
+              <div class="feature-item disabled">
+                <XCircle :size="18" />
+                <span>Cannot delete individual items</span>
+              </div>
+              <div class="feature-item disabled">
+                <XCircle :size="18" />
+                <span>Session data not permanent</span>
+              </div>
+            </div>
+            <button class="btn-access" @click="continueAsGuest">
+              Try as Guest
+            </button>
+          </div>
+
+          <!-- PREMIUM MODE -->
+          <div class="access-card premium-card">
+            <div class="premium-badge">Recommended</div>
+            <div class="access-header">
+              <div class="access-icon premium-icon">
+                <Crown :size="28" />
+              </div>
+              <h3 class="access-title">Premium Access</h3>
+              <p class="access-subtitle">Full power unleashed</p>
+            </div>
+            <div class="access-features">
+              <div class="feature-item enabled">
+                <CheckCircle2 :size="18" />
+                <span>Unlimited calculations</span>
+              </div>
+              <div class="feature-item enabled">
+                <CheckCircle2 :size="18" />
+                <span>Complete calculation history</span>
+              </div>
+              <div class="feature-item enabled">
+                <CheckCircle2 :size="18" />
+                <span>Unlimited notes on all calculations</span>
+              </div>
+              <div class="feature-item enabled">
+                <CheckCircle2 :size="18" />
+                <span>Weekly calculation analytics</span>
+              </div>
+              <div class="feature-item enabled">
+                <CheckCircle2 :size="18" />
+                <span>Delete individual history items</span>
+              </div>
+              <div class="feature-item enabled">
+                <CheckCircle2 :size="18" />
+                <span>Clear entire history anytime</span>
+              </div>
+              <div class="feature-item enabled">
+                <CheckCircle2 :size="18" />
+                <span>Secure & persistent cloud storage</span>
+              </div>
+            </div>
+            <button class="btn-access premium-btn" @click="goRegister">
+              Get Premium Free
+            </button>
           </div>
         </div>
       </div>
@@ -120,10 +245,10 @@
         <div class="section-header">
           <div class="section-badge">Features</div>
           <h2 class="section-title">
-            Everything required for<br />a backend assessment
+            Everything you need for<br />professional calculations
           </h2>
           <p class="section-description">
-            Implemented using Django & Django REST Framework.
+            Built with Django REST Framework & Vue.js for maximum performance.
           </p>
         </div>
         <div class="features-grid">
@@ -131,54 +256,59 @@
             <div class="feature-icon" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">
               <Calculator :size="24" />
             </div>
-            <h3 class="feature-title">Basic Calculator</h3>
+            <h3 class="feature-title">Advanced Calculator</h3>
             <p class="feature-description">
-              Supports addition, subtraction, multiplication, and division with validation and error handling.
+              Four basic operations with real-time validation, error handling, and instant results. Premium users get unlimited calculations.
             </p>
           </div>
+          
           <div class="feature-card">
             <div class="feature-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">
               <History :size="24" />
             </div>
-            <h3 class="feature-title">Calculation History</h3>
+            <h3 class="feature-title">Smart History Tracking</h3>
             <p class="feature-description">
-              All calculations are stored with operands, operator, result, and timestamp.
+              Every calculation stored with full details, timestamps, and notes. Guest mode: 10 items. Premium: unlimited with full control.
             </p>
           </div>
+          
           <div class="feature-card">
             <div class="feature-icon" style="background:linear-gradient(135deg,#10b981,#059669)">
-              <Users :size="24" />
-            </div>
-            <h3 class="feature-title">User Authentication</h3>
-            <p class="feature-description">
-              Secure registration and login using Django authentication with user-specific history.
-            </p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">
               <FileText :size="24" />
             </div>
-            <h3 class="feature-title">RESTful APIs</h3>
+            <h3 class="feature-title">Calculation Notes</h3>
             <p class="feature-description">
-              Calculation, history retrieval, and deletion are exposed via REST APIs.
+              Add context to your calculations with smart notes. Guest users can add notes to 2 calculations. Premium users: unlimited notes.
             </p>
           </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">
+              <TrendingUp :size="24" />
+            </div>
+            <h3 class="feature-title">Weekly Analytics</h3>
+            <p class="feature-description">
+              Track your calculation patterns with weekly statistics. Available for both guest and premium users to monitor productivity.
+            </p>
+          </div>
+          
           <div class="feature-card">
             <div class="feature-icon" style="background:linear-gradient(135deg,#ec4899,#db2777)">
-              <Zap :size="24" />
+              <Trash2 :size="24" />
             </div>
-            <h3 class="feature-title">Guest Sessions</h3>
+            <h3 class="feature-title">History Management</h3>
             <p class="feature-description">
-              Users can calculate without registering. Guest history is stored using sessions.
+              Premium users can delete individual history items or clear entire history. Guest users have read-only access to their 10 recent items.
             </p>
           </div>
+          
           <div class="feature-card">
             <div class="feature-icon" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">
-              <Shield :size="16" />
+              <Shield :size="24" />
             </div>
-            <h3 class="feature-title">Admin Dashboard</h3>
+            <h3 class="feature-title">Secure Authentication</h3>
             <p class="feature-description">
-              Django admin panel for managing users and monitoring all calculation records.
+              Django-powered authentication with session management. Guest sessions for quick access. User accounts for permanent data storage.
             </p>
           </div>
         </div>
@@ -197,12 +327,12 @@
           <div class="stat-label">Access Modes</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">REST</div>
-          <div class="stat-label">API Driven</div>
+          <div class="stat-number">∞</div>
+          <div class="stat-label">Premium Calculations</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">Django</div>
-          <div class="stat-label">Backend Framework</div>
+          <div class="stat-number">REST</div>
+          <div class="stat-label">API Architecture</div>
         </div>
       </div>
     </section>
@@ -210,14 +340,23 @@
     <!-- ================= CTA ================= -->
     <section class="cta-section">
       <div class="cta-container">
-        <h2 class="cta-title">Ready to calculate?</h2>
+        <div class="cta-icon">
+          <Zap :size="48" />
+        </div>
+        <h2 class="cta-title">Ready to supercharge your calculations?</h2>
         <p class="cta-description">
-          Create an account or continue as a guest.
-          History is stored securely per session.
+          Create a free account for unlimited calculations, notes, weekly analytics, 
+          and complete history management. No credit card required.
         </p>
-        <button class="btn btn-primary-large" @click="goRegister">
-          Get Started
-        </button>
+        <div class="cta-buttons">
+          <button class="btn btn-primary-large" @click="goRegister">
+            Get Premium Access Free
+            <ArrowRight :size="20" />
+          </button>
+          <button class="btn btn-secondary-large" @click="continueAsGuest">
+            Try as Guest
+          </button>
+        </div>
       </div>
     </section>
 
@@ -234,13 +373,18 @@ import api from '@/services/api'
 import {
   ArrowRight,
   CheckCircle2,
+  XCircle,
   Calculator,
   History,
   Users,
   FileText,
   Zap,
   Shield,
-  User
+  User,
+  Crown,
+  TrendingUp,
+  Trash2,
+  Sparkles
 } from 'lucide-vue-next'
 
 export default {
@@ -250,13 +394,18 @@ export default {
     Footer,
     ArrowRight,
     CheckCircle2,
+    XCircle,
     Calculator,
     History,
     Users,
     FileText,
     Zap,
     Shield,
-    User
+    User,
+    Crown,
+    TrendingUp,
+    Trash2,
+    Sparkles
   },
 
   data() {
@@ -272,23 +421,19 @@ export default {
   },
 
   async mounted() {
-    // 🔥 Check authentication status on mount
     await this.checkAuth()
   },
 
   methods: {
-    // 🔥 Check if user is authenticated via API
     async checkAuth() {
       try {
         const res = await api.get('/auth/me/', { withCredentials: true })
         this.isAuthenticated = res.data.is_authenticated
         
         if (this.isAuthenticated) {
-          // Clear guest flag if user is authenticated
           localStorage.removeItem('is_guest')
         }
       } catch (error) {
-    
         this.isAuthenticated = false
       }
     },
@@ -306,7 +451,6 @@ export default {
     },
 
     continueAsGuest() {
-      // Set guest mode
       localStorage.setItem('is_guest', 'true')
       localStorage.removeItem('user')
       this.$router.push('/dashboard')
@@ -382,7 +526,7 @@ export default {
 }
 
 .badge-icon {
-  font-size: 1rem;
+  color: var(--primary);
 }
 
 @keyframes badge-float {
@@ -420,8 +564,8 @@ export default {
 }
 
 .hero-description {
-  font-size: 1.25rem;
-  line-height: 1.6;
+  font-size: 1.2rem;
+  line-height: 1.7;
   color: var(--text-secondary);
   max-width: 600px;
 }
@@ -472,7 +616,7 @@ export default {
 .btn-primary-large {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.8rem;
   padding: 1.3rem 2.8rem;
   border-radius: 12px;
   font-weight: 600;
@@ -488,6 +632,26 @@ export default {
 .btn-primary-large:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
+}
+
+.btn-secondary-large {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.3rem 2.8rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: white;
+  color: var(--text-primary);
+}
+
+.btn-secondary-large:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 .trust-indicators {
@@ -590,6 +754,19 @@ export default {
   font-size: 2.5rem;
   font-weight: 700;
   color: var(--primary);
+  margin-bottom: 0.8rem;
+}
+
+.calc-note {
+  font-size: 0.9rem;
+  color: var(--accent);
+  font-style: italic;
+  padding: 0.6rem 1rem;
+  background: rgba(139, 92, 246, 0.08);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent);
+  display: flex;
+  align-items: center;
 }
 
 .calc-history {
@@ -671,10 +848,10 @@ export default {
   50% { transform: translateY(-12px); }
 }
 
-/* ================= FEATURES ================= */
-.features-section {
+/* ================= ACCESS COMPARISON ================= */
+.comparison-section {
   padding: 100px 5vw;
-  background: white;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
 }
 
 .section-container {
@@ -715,6 +892,159 @@ export default {
   margin: 0 auto;
 }
 
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 2.5rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.access-card {
+  position: relative;
+  padding: 3rem 2.5rem;
+  background: white;
+  border-radius: 24px;
+  border: 2px solid rgba(0, 0, 0, 0.06);
+  transition: all 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.guest-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+}
+
+.premium-card {
+  border: 2px solid var(--primary);
+  box-shadow: 0 20px 60px rgba(59, 130, 246, 0.15);
+}
+
+.premium-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 30px 70px rgba(59, 130, 246, 0.25);
+}
+
+.premium-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 20px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.access-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.access-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  color: white;
+}
+
+.guest-icon {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.premium-icon {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+}
+
+.access-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.access-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.access-features {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  font-size: 0.95rem;
+}
+
+.feature-item.enabled {
+  color: var(--text-primary);
+}
+
+.feature-item.enabled svg {
+  color: var(--success);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.feature-item.disabled {
+  color: var(--text-tertiary);
+}
+
+.feature-item.disabled svg {
+  color: #cbd5e1;
+}
+
+.btn-access {
+  width: 100%;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  background: white;
+  color: var(--text-primary);
+}
+
+.btn-access:hover {
+  background: var(--text-primary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.premium-btn {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25);
+}
+
+.premium-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
+}
+
+/* ================= FEATURES ================= */
+.features-section {
+  padding: 100px 5vw;
+  background: white;
+}
+
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -744,6 +1074,19 @@ export default {
   justify-content: center;
   margin-bottom: 1.5rem;
   color: white;
+}
+
+.feature-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.feature-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
 }
 
 /* ================= STATS ================= */
@@ -781,7 +1124,7 @@ export default {
 /* ================= CTA ================= */
 .cta-section {
   padding: 100px 5vw;
-  background: white;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 }
 
 .cta-container {
@@ -792,6 +1135,24 @@ export default {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   border-radius: 30px;
   border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.cta-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 2rem;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
 
 .cta-title {
@@ -806,9 +1167,17 @@ export default {
   font-size: 1.25rem;
   color: var(--text-secondary);
   margin-bottom: 2.5rem;
-  max-width: 600px;
+  max-width: 700px;
   margin-left: auto;
   margin-right: auto;
+  line-height: 1.7;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 /* ================= RESPONSIVE ================= */
@@ -822,6 +1191,10 @@ export default {
   }
   .float-card {
     display: none;
+  }
+  .comparison-grid {
+    grid-template-columns: 1fr;
+    max-width: 500px;
   }
 }
 
@@ -857,6 +1230,14 @@ export default {
   .cta-container {
     padding: 3rem 2rem;
   }
+  .cta-buttons {
+    flex-direction: column;
+  }
+  .btn-primary-large,
+  .btn-secondary-large {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 480px) {
@@ -867,6 +1248,9 @@ export default {
     font-size: 2rem;
   }
   .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .comparison-grid {
     grid-template-columns: 1fr;
   }
 }

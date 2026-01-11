@@ -17,7 +17,6 @@
         >
           <RefreshCw :size="16" />
         </button>
-        <!-- Clear All Button - Only for logged-in users -->
         <button
           v-if="!isGuest && history.length > 0"
           class="action-button clear"
@@ -72,6 +71,11 @@
               <Equal :size="14" />
               <span class="result">{{ formatNumber(item.result) }}</span>
             </div>
+            <!-- Display Note if exists -->
+            <div v-if="item.note" class="note-display">
+              <FileText :size="12" />
+              <span>{{ item.note }}</span>
+            </div>
           </div>
         </div>
         <div class="item-actions">
@@ -82,7 +86,6 @@
           >
             <Copy :size="16" />
           </button>
-          <!-- Delete Button - Only for logged-in users -->
           <button
             v-if="!isGuest"
             class="item-action-btn delete"
@@ -185,7 +188,8 @@ import {
   X,
   Equal,
   AlertTriangle,
-  CheckCircle2
+  CheckCircle2,
+  FileText  
 } from 'lucide-vue-next'
 
 export default {
@@ -207,7 +211,8 @@ export default {
     X,
     Equal,
     AlertTriangle,
-    CheckCircle2
+    CheckCircle2,
+    FileText 
   },
   
   data() {
@@ -227,7 +232,6 @@ export default {
   },
   
   methods: {
-    // Fetch history from API
     async fetchHistory() {
       this.loading = true
       try {
@@ -282,18 +286,14 @@ export default {
       try {
         await api.delete(`/history/${this.itemToDelete}/`)
         
-        // Remove item from list immediately
         this.history = this.history.filter(item => item.id !== this.itemToDelete)
         this.showDeleteModal = false
         this.itemToDelete = null
         
-        // Show success modal
         this.successMessage = 'Calculation deleted successfully!'
         this.showSuccessModal = true
       } catch (err) {
-        // Ignore 204 and network errors (item is actually deleted)
         if (err.code === 'ERR_NETWORK' || err.message === 'Network Error') {
-          // Remove item from list (it's actually deleted)
           this.history = this.history.filter(item => item.id !== this.itemToDelete)
           this.showDeleteModal = false
           this.itemToDelete = null
@@ -328,17 +328,13 @@ export default {
       try {
         await api.delete('/history/clear/')
         
-        // Clear history immediately
         this.history = []
         this.showClearModal = false
         
-        // Show success modal
         this.successMessage = 'All history cleared successfully!'
         this.showSuccessModal = true
       } catch (err) {
-        // Ignore 204 and network errors (history is actually cleared)
         if (err.code === 'ERR_NETWORK' || err.message === 'Network Error') {
-          // Clear history (it's actually cleared)
           this.history = []
           this.showClearModal = false
           this.successMessage = 'All history cleared successfully!'
@@ -366,7 +362,6 @@ export default {
   height: 100%;
 }
 
-/* Header */
 .history-header {
   display: flex;
   align-items: center;
@@ -442,7 +437,6 @@ export default {
   to { transform: rotate(360deg); }
 }
 
-/* Loading State */
 .loading-state {
   display: flex;
   flex-direction: column;
@@ -462,7 +456,6 @@ export default {
   margin-bottom: 1rem;
 }
 
-/* History List */
 .history-list {
   display: flex;
   flex-direction: column;
@@ -568,6 +561,31 @@ export default {
   font-size: 1.1rem;
 }
 
+/*Note Display Styling */
+.note-display {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(59, 130, 246, 0.05);
+  border-left: 2px solid rgba(59, 130, 246, 0.3);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+
+.note-display svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--primary);
+}
+
+.note-display span {
+  word-break: break-word;
+}
+
 .item-actions {
   display: flex;
   gap: 0.5rem;
@@ -607,7 +625,6 @@ export default {
   border-color: rgba(239, 68, 68, 0.2);
 }
 
-/* Empty State */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -643,7 +660,6 @@ export default {
   line-height: 1.6;
 }
 
-/* Confirmation Modals */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -750,37 +766,6 @@ export default {
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-/* Success Toast Notification */
-.success-toast {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-weight: 600;
-  font-size: 0.95rem;
-  z-index: 10000;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-.success-toast.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.success-toast svg {
-  flex-shrink: 0;
-}
-
-/* Animations */
 .list-enter-active,
 .list-leave-active {
   transition: all 0.3s ease;
@@ -800,16 +785,6 @@ export default {
   transition: transform 0.3s ease;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
 .modal-enter-active,
 .modal-leave-active {
   transition: all 0.3s ease;
@@ -825,7 +800,6 @@ export default {
   transform: scale(0.9) translateY(20px);
 }
 
-/* Responsive */
 @media (max-width: 640px) {
   .history-item {
     flex-direction: column;
@@ -840,14 +814,6 @@ export default {
 
   .expression {
     flex-wrap: wrap;
-  }
-
-  .success-toast {
-    bottom: 1rem;
-    right: 1rem;
-    left: 1rem;
-    padding: 0.875rem 1.25rem;
-    font-size: 0.9rem;
   }
 }
 </style>

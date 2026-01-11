@@ -17,8 +17,8 @@
           </h2>
 
           <p class="branding-description">
-            Create your free account and unlock the power of advanced calculations.
-            Trusted by 50,000+ professionals worldwide.
+            Create your free account and unlock premium features including unlimited 
+            calculations, smart notes, and complete history management.
           </p>
 
           <div class="feature-list">
@@ -27,28 +27,38 @@
                 <Zap :size="18" />
               </div>
               <div class="feature-text">
-                <strong>Instant Access</strong>
-                <span>You are logged in automatically after registration</span>
+                <strong>Instant Premium Access</strong>
+                <span>Automatically logged in with full features enabled</span>
               </div>
             </div>
 
             <div class="feature-item">
               <div class="feature-icon">
-                <History :size="18" />
+                <FileText :size="18" />
               </div>
               <div class="feature-text">
-                <strong>User-Based History</strong>
-                <span>All calculations are securely linked to your account</span>
+                <strong>Unlimited Notes</strong>
+                <span>Add context and reminders to all your calculations</span>
               </div>
             </div>
 
             <div class="feature-item">
               <div class="feature-icon">
-                <Shield :size="18" />
+                <TrendingUp :size="18" />
               </div>
               <div class="feature-text">
-                <strong>Secure by Design</strong>
-                <span>Built with Django authentication and sessions</span>
+                <strong>Weekly Analytics</strong>
+                <span>Track your productivity with detailed statistics</span>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <div class="feature-icon">
+                <Database :size="18" />
+              </div>
+              <div class="feature-text">
+                <strong>Cloud Storage</strong>
+                <span>Your data is securely saved and synced across devices</span>
               </div>
             </div>
           </div>
@@ -65,7 +75,7 @@
               </div>
               <h1>Create your account</h1>
               <p class="header-subtitle">
-                Register to securely save your calculations and access your history across sessions.
+                Start with premium access — no credit card required
               </p>
             </div>
 
@@ -152,7 +162,7 @@
                   <span>Creating account...</span>
                 </span>
                 <span v-else class="btn-content">
-                  <span>Create Account</span>
+                  <span>Create Premium Account</span>
                   <ArrowRight :size="18" />
                 </span>
               </button>
@@ -198,7 +208,7 @@
     <div v-if="isFullLoading" class="full-loading-overlay">
       <div class="loading-content">
         <div class="loading-spinner"></div>
-        <p class="loading-text">Creating your account securely...</p>
+        <p class="loading-text">Creating your premium account...</p>
       </div>
     </div>
 
@@ -216,11 +226,11 @@ import {
   Lock,
   ArrowRight,
   Zap,
-  History,
-  Cloud,
   Shield,
   AlertCircle,
-  Calculator
+  FileText,
+  TrendingUp,
+  Database
 } from 'lucide-vue-next'
 
 import Navbar from '@/components/Navbar.vue'
@@ -242,11 +252,11 @@ export default {
     Lock,
     ArrowRight,
     Zap,
-    History,
-    Cloud,
     Shield,
     AlertCircle,
-    Calculator
+    FileText,
+    TrendingUp,
+    Database
   },
 
   data() {
@@ -326,7 +336,7 @@ export default {
 
         // UX feedback
         this.message =
-          'Account created & logged in successfully! Redirecting to dashboard...'
+          'Premium account created successfully! Redirecting to dashboard...'
         this.messageType = 'success'
         this.showMessage = true
 

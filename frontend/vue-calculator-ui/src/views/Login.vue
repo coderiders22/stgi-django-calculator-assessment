@@ -18,38 +18,48 @@
     </h2>
 
     <p class="branding-description">
-      Sign in to access your saved calculations and continue
-      exactly where you left off.
+      Sign in to unlock premium features including unlimited calculations, 
+      smart notes, and complete history management.
     </p>
 
     <div class="feature-list">
       <div class="feature-item">
         <div class="feature-icon">
-          <CheckCircle2 :size="18" />
+          <FileText :size="18" />
         </div>
         <div class="feature-text">
-          <strong>Persistent History</strong>
-          <span>Your calculations are securely stored per account</span>
+          <strong>Unlimited Smart Notes</strong>
+          <span>Add context to all your calculations with notes</span>
         </div>
       </div>
 
       <div class="feature-item">
         <div class="feature-icon">
-          <CheckCircle2 :size="18" />
+          <TrendingUp :size="18" />
         </div>
         <div class="feature-text">
-          <strong>Django Authentication</strong>
-          <span>Powered by Django's built-in auth system</span>
+          <strong>Weekly Analytics</strong>
+          <span>Track your calculation patterns and productivity</span>
         </div>
       </div>
 
       <div class="feature-item">
         <div class="feature-icon">
-          <CheckCircle2 :size="18" />
+          <History :size="18" />
         </div>
         <div class="feature-text">
-          <strong>Guest to User Upgrade</strong>
-          <span>Move from guest mode to a full account anytime</span>
+          <strong>Complete History Control</strong>
+          <span>Delete individual items or clear entire history anytime</span>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon">
+          <Database :size="18" />
+        </div>
+        <div class="feature-text">
+          <strong>Secure Cloud Storage</strong>
+          <span>Your data is permanently saved and accessible anywhere</span>
         </div>
       </div>
     </div>
@@ -199,9 +209,11 @@ import {
   Lock,
   ArrowRight,
   Shield,
-  CheckCircle2,
   AlertCircle,
-  Calculator
+  FileText,
+  TrendingUp,
+  History,
+  Database
 } from 'lucide-vue-next'
 
 import Navbar from '@/components/Navbar.vue'
@@ -223,9 +235,11 @@ export default {
     Lock,
     ArrowRight,
     Shield,
-    CheckCircle2,
     AlertCircle,
-    Calculator
+    FileText,
+    TrendingUp,
+    History,
+    Database
   },
 
   data() {

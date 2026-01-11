@@ -19,6 +19,7 @@ class CalculateView(APIView):
             a = float(request.data.get("operand1"))
             b = float(request.data.get("operand2"))
             op = request.data.get("operator")
+            note = request.data.get("note", "").strip()  # Get optional note
         except (TypeError, ValueError):
             return Response(
                 {"error": "Invalid number input"},
@@ -51,9 +52,10 @@ class CalculateView(APIView):
             "operand2": b,
             "operator": op,
             "result": result,
+            "note": note[:500]  # Limit to 500 characters
         }
 
-        # AUTH USER → USER HISTORY
+        # AUTH USER → USER HISTORY (Unlimited notes)
         if request.user.is_authenticated:
             data["user"] = request.user
 
@@ -64,7 +66,7 @@ class CalculateView(APIView):
 
             data["session_key"] = request.session.session_key
 
-            # Guest history limit (10)
+            # Guest history limit (10 calculations)
             guest_count = CalculationHistory.objects.filter(
                 session_key=request.session.session_key
             ).count()
@@ -76,6 +78,20 @@ class CalculateView(APIView):
                     },
                     status=status.HTTP_403_FORBIDDEN
                 )
+            
+            # Guest notes limit (Only 2 calculations can have notes)
+            if note:  # If guest is trying to add a note
+                guest_notes_count = CalculationHistory.objects.filter(
+                    session_key=request.session.session_key
+                ).exclude(note='').count()
+                
+                if guest_notes_count >= 2:
+                    return Response(
+                        {
+                            "error": "Guest note limit reached. You can only add notes to 2 calculations. Login for unlimited notes."
+                        },
+                        status=status.HTTP_403_FORBIDDEN
+                    )
 
         CalculationHistory.objects.create(**data)
 
@@ -93,15 +109,19 @@ class HistoryView(APIView):
 
     def get(self, request):
         if request.user.is_authenticated:
-            history = CalculationHistory.objects.filter(user=request.user)
+            # Order by newest first for authenticated users
+            history = CalculationHistory.objects.filter(
+                user=request.user
+            ).order_by('-created_at')
 
         else:
             if not request.session.session_key:
                 return Response([], status=status.HTTP_200_OK)
 
+            # Order by newest first and limit to 10 for guests
             history = CalculationHistory.objects.filter(
                 session_key=request.session.session_key
-            )[:10]  # guest limit
+            ).order_by('-created_at')[:10]
 
         serializer = CalculationHistorySerializer(history, many=True)
         return Response(serializer.data)
@@ -136,7 +156,7 @@ def delete_history_item(request, pk):
         )
 
     item.delete()
-  
+
     return Response(
         {"detail": "History item deleted"},
         status=status.HTTP_200_OK

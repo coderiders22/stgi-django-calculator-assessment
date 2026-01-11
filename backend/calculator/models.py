@@ -16,6 +16,7 @@ class CalculationHistory(models.Model):
     operand2 = models.FloatField()
     operator = models.CharField(max_length=1)
     result = models.FloatField()
+    note = models.TextField(max_length=500, blank=True, default='')  # Optional note
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
