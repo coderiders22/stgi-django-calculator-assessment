@@ -1,0 +1,873 @@
+<!-- src/views/Welcome.vue -->
+<template>
+  <div class="welcome-page">
+    <Navbar />
+    
+    <!-- ================= HERO SECTION ================= -->
+    <section class="hero-section">
+      <div class="hero-container">
+        <div class="hero-content">
+          <div class="badge-wrapper">
+            <div class="badge">
+              <span class="badge-icon"></span>
+              <span>Django • Vue.js • STGI Assessment Project • 2026</span>
+            </div>
+          </div>
+          <h1 class="hero-title">
+            <span class="title-line">Simple. Secure. Reliable.</span>
+            <span class="title-gradient">
+              CalculatorPro<span class="dot">.</span>
+            </span>
+          </h1>
+          <p class="hero-description">
+            A Django-based calculator application with
+            user authentication, guest sessions, and
+            persistent calculation history.
+          </p>
+          <div class="hero-actions">
+            <!-- Logged in user -->
+            <template v-if="isAuthenticated">
+              <button class="btn btn-primary" @click="goDashboard">
+                <span>Go to Dashboard</span>
+                <ArrowRight :size="20" />
+              </button>
+            </template>
+
+            <!-- Guest mode (already logged in as guest) -->
+            <template v-else-if="isGuest">
+              <button class="btn btn-primary" @click="goDashboard">
+                <span>Resume as Guest</span>
+                <ArrowRight :size="20" />
+              </button>
+              <button class="btn btn-secondary" @click="goLogin">
+                <span>Login to Save History</span>
+              </button>
+            </template>
+
+            <!-- Not logged in → Primary: Guest, Secondary: Login -->
+            <template v-else>
+              <button class="btn btn-primary" @click="continueAsGuest">
+                <span>Continue as Guest</span>
+                <ArrowRight :size="20" />
+              </button>
+              <button class="btn btn-secondary" @click="goLogin">
+                <span>Login</span>
+              </button>
+            </template>
+          </div>
+          <div class="trust-indicators">
+            <div class="trust-item">
+              <CheckCircle2 :size="16" />
+              <span>User & Guest Modes</span>
+            </div>
+            <div class="trust-item">
+              <CheckCircle2 :size="16" />
+              <span>Session-based History</span>
+            </div>
+            <div class="trust-item">
+              <CheckCircle2 :size="16" />
+              <span>REST API Powered</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- HERO VISUAL -->
+        <div class="hero-visual">
+          <div class="visual-card">
+            <div class="card-header">
+              <div class="card-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="card-title">Live Calculation</div>
+            </div>
+            <div class="card-content">
+              <div class="calc-display">
+                <div class="calc-operation">125 × 4</div>
+                <div class="calc-result">500</div>
+              </div>
+              <div class="calc-history">
+                <div class="history-item">
+                  <span>10 + 5</span>
+                  <span>15</span>
+                </div>
+                <div class="history-item">
+                  <span>20 ÷ 4</span>
+                  <span>5</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- FLOATING CARDS -->
+          <div class="float-card float-1">
+            <Zap :size="16" />
+            <span>REST APIs</span>
+          </div>
+          <div class="float-card float-2">
+            <Users :size="16" />
+            <span>User & Guest Access</span>
+          </div>
+          <div class="float-card float-3">
+            <Shield :size="16" />
+            <span>Django Sessions</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FEATURES ================= -->
+    <section class="features-section" id="features">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-badge">Features</div>
+          <h2 class="section-title">
+            Everything required for<br />a backend assessment
+          </h2>
+          <p class="section-description">
+            Implemented using Django & Django REST Framework.
+          </p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">
+              <Calculator :size="24" />
+            </div>
+            <h3 class="feature-title">Basic Calculator</h3>
+            <p class="feature-description">
+              Supports addition, subtraction, multiplication, and division with validation and error handling.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">
+              <History :size="24" />
+            </div>
+            <h3 class="feature-title">Calculation History</h3>
+            <p class="feature-description">
+              All calculations are stored with operands, operator, result, and timestamp.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="background:linear-gradient(135deg,#10b981,#059669)">
+              <Users :size="24" />
+            </div>
+            <h3 class="feature-title">User Authentication</h3>
+            <p class="feature-description">
+              Secure registration and login using Django authentication with user-specific history.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">
+              <FileText :size="24" />
+            </div>
+            <h3 class="feature-title">RESTful APIs</h3>
+            <p class="feature-description">
+              Calculation, history retrieval, and deletion are exposed via REST APIs.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="background:linear-gradient(135deg,#ec4899,#db2777)">
+              <Zap :size="24" />
+            </div>
+            <h3 class="feature-title">Guest Sessions</h3>
+            <p class="feature-description">
+              Users can calculate without registering. Guest history is stored using sessions.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">
+              <Shield :size="16" />
+            </div>
+            <h3 class="feature-title">Admin Dashboard</h3>
+            <p class="feature-description">
+              Django admin panel for managing users and monitoring all calculation records.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= STATS ================= -->
+    <section class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">4</div>
+          <div class="stat-label">Math Operations</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">2</div>
+          <div class="stat-label">Access Modes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">REST</div>
+          <div class="stat-label">API Driven</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">Django</div>
+          <div class="stat-label">Backend Framework</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CTA ================= -->
+    <section class="cta-section">
+      <div class="cta-container">
+        <h2 class="cta-title">Ready to calculate?</h2>
+        <p class="cta-description">
+          Create an account or continue as a guest.
+          History is stored securely per session.
+        </p>
+        <button class="btn btn-primary-large" @click="goRegister">
+          Get Started
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+    <Footer />
+  </div>
+</template>
+
+<script>
+import Navbar from '@/components/Navbar.vue'
+import Footer from '@/components/Footer.vue'
+import api from '@/services/api'
+
+import {
+  ArrowRight,
+  CheckCircle2,
+  Calculator,
+  History,
+  Users,
+  FileText,
+  Zap,
+  Shield,
+  User
+} from 'lucide-vue-next'
+
+export default {
+  name: 'Welcome',
+  components: {
+    Navbar,
+    Footer,
+    ArrowRight,
+    CheckCircle2,
+    Calculator,
+    History,
+    Users,
+    FileText,
+    Zap,
+    Shield,
+    User
+  },
+
+  data() {
+    return {
+      isAuthenticated: false,
+    }
+  },
+
+  computed: {
+    isGuest() {
+      return localStorage.getItem('is_guest') === 'true'
+    }
+  },
+
+  async mounted() {
+    // 🔥 Check authentication status on mount
+    await this.checkAuth()
+  },
+
+  methods: {
+    // 🔥 Check if user is authenticated via API
+    async checkAuth() {
+      try {
+        const res = await api.get('/auth/me/', { withCredentials: true })
+        this.isAuthenticated = res.data.is_authenticated
+        
+        if (this.isAuthenticated) {
+          // Clear guest flag if user is authenticated
+          localStorage.removeItem('is_guest')
+        }
+      } catch (error) {
+    
+        this.isAuthenticated = false
+      }
+    },
+
+    goDashboard() {
+      this.$router.push('/dashboard')
+    },
+
+    goLogin() {
+      this.$router.push('/login')
+    },
+
+    goRegister() {
+      this.$router.push('/register')
+    },
+
+    continueAsGuest() {
+      // Set guest mode
+      localStorage.setItem('is_guest', 'true')
+      localStorage.removeItem('user')
+      this.$router.push('/dashboard')
+    }
+  }
+}
+</script>
+
+<style scoped>
+/* ================= GLOBAL ================= */
+.welcome-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);
+  overflow-x: hidden;
+}
+
+/* ================= HERO SECTION ================= */
+.hero-section {
+  padding: 70px 5vw 100px;
+  position: relative;
+  min-height: calc(100vh - 70px);
+  display: flex;
+  align-items: center;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1200px;
+  height: 600px;
+  background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-container {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.badge-wrapper {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 50px;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  animation: badge-float 3s ease-in-out infinite;
+}
+
+.badge-icon {
+  font-size: 1rem;
+}
+
+@keyframes badge-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+.hero-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.title-line {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.title-gradient {
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.03em;
+}
+
+.dot {
+  color: var(--accent);
+  -webkit-text-fill-color: var(--accent);
+}
+
+.hero-description {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: 600px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+  border: none;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:hover {
+  background: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.btn-primary-large {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.3rem 2.8rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+  border: none;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary-large:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
+}
+
+.trust-indicators {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.trust-item svg {
+  color: var(--success);
+}
+
+/* ================= HERO VISUAL ================= */
+.hero-visual {
+  position: relative;
+  height: 500px;
+}
+
+.visual-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+  50% { transform: translate(-50%, -50%) translateY(-20px); }
+}
+
+.card-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.card-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.card-dots span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.card-dots span:nth-child(2) {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.card-dots span:nth-child(3) {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.card-title {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.card-content {
+  padding: 2rem 1.5rem;
+}
+
+.calc-display {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.calc-operation {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.8rem;
+}
+
+.calc-result {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.calc-history {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  background: rgba(59, 130, 246, 0.04);
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.history-item span:first-child {
+  color: var(--text-secondary);
+}
+
+.history-item span:last-child {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ================= FLOATING CARDS ================= */
+.float-card {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.2rem;
+  background: white;
+  border-radius: 50px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.float-card svg {
+  color: var(--primary);
+}
+
+.float-1 {
+  top: 10%;
+  right: -10%;
+  animation: float-1 4s ease-in-out infinite;
+}
+
+.float-2 {
+  bottom: 30%;
+  right: -15%;
+  animation: float-2 5s ease-in-out infinite 0.5s;
+}
+
+.float-3 {
+  top: 60%;
+  left: -12%;
+  animation: float-3 4.5s ease-in-out infinite 1s;
+}
+
+@keyframes float-1 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes float-2 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes float-3 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+/* ================= FEATURES ================= */
+.features-section {
+  padding: 100px 5vw;
+  background: white;
+}
+
+.section-container {
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 5rem;
+}
+
+.section-badge {
+  display: inline-block;
+  padding: 8px 18px;
+  border-radius: 50px;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.section-description {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.feature-card {
+  padding: 2.5rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: all 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  color: white;
+}
+
+/* ================= STATS ================= */
+.stats-section {
+  padding: 80px 5vw;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+}
+
+.stats-grid {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 3rem;
+}
+
+.stat-card {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: white;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+}
+
+/* ================= CTA ================= */
+.cta-section {
+  padding: 100px 5vw;
+  background: white;
+}
+
+.cta-container {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 5rem 3rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.cta-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.cta-description {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  margin-bottom: 2.5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1024px) {
+  .hero-container {
+    grid-template-columns: 1fr;
+    gap: 60px;
+  }
+  .hero-visual {
+    height: 400px;
+  }
+  .float-card {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 80px 5vw 60px;
+  }
+  .hero-content {
+    gap: 1.5rem;
+  }
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .trust-indicators {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+  .stat-number {
+    font-size: 2.5rem;
+  }
+  .cta-container {
+    padding: 3rem 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .visual-card {
+    max-width: 100%;
+  }
+  .calc-result {
+    font-size: 2rem;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
