@@ -15,6 +15,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     ".koyeb.app",
+    ".vercel.app"
 ]
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -44,6 +45,8 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://stgi-django-calculator-assessment.vercel.app",
+    
  
 ]
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS[:]
