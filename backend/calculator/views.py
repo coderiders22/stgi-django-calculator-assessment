@@ -4,13 +4,17 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+
 from .models import CalculationHistory
 from .serializers import CalculationHistorySerializer
 
 
 # =========================
-# CALCULATE API
+# CALCULATE API (CSRF EXEMPT)
 # =========================
+@method_decorator(csrf_exempt, name="dispatch")
 class CalculateView(APIView):
     permission_classes = [AllowAny]  # guest can calculate
 
@@ -19,7 +23,7 @@ class CalculateView(APIView):
             a = float(request.data.get("operand1"))
             b = float(request.data.get("operand2"))
             op = request.data.get("operator")
-            note = request.data.get("note", "").strip()  # Get optional note
+            note = request.data.get("note", "").strip()
         except (TypeError, ValueError):
             return Response(
                 {"error": "Invalid number input"},
@@ -32,7 +36,7 @@ class CalculateView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # ✅ SAFE CALCULATION
+        # SAFE CALCULATION
         if op == "+":
             result = a + b
         elif op == "-":
@@ -52,21 +56,20 @@ class CalculateView(APIView):
             "operand2": b,
             "operator": op,
             "result": result,
-            "note": note[:500]  # Limit to 500 characters
+            "note": note[:500]
         }
 
-        # AUTH USER → USER HISTORY (Unlimited notes)
+        # AUTH USER → USER HISTORY
         if request.user.is_authenticated:
             data["user"] = request.user
 
-        # GUEST → SESSION HISTORY (LIMITED)
+        # GUEST → SESSION HISTORY
         else:
             if not request.session.session_key:
                 request.session.create()
 
             data["session_key"] = request.session.session_key
 
-            # Guest history limit (10 calculations)
             guest_count = CalculationHistory.objects.filter(
                 session_key=request.session.session_key
             ).count()
@@ -78,17 +81,16 @@ class CalculateView(APIView):
                     },
                     status=status.HTTP_403_FORBIDDEN
                 )
-            
-            # Guest notes limit (Only 2 calculations can have notes)
-            if note:  # If guest is trying to add a note
+
+            if note:
                 guest_notes_count = CalculationHistory.objects.filter(
                     session_key=request.session.session_key
-                ).exclude(note='').count()
-                
+                ).exclude(note="").count()
+
                 if guest_notes_count >= 2:
                     return Response(
                         {
-                            "error": "Guest note limit reached. You can only add notes to 2 calculations. Login for unlimited notes."
+                            "error": "Guest note limit reached. Login for unlimited notes."
                         },
                         status=status.HTTP_403_FORBIDDEN
                     )
@@ -102,34 +104,32 @@ class CalculateView(APIView):
 
 
 # =========================
-# FETCH HISTORY (USER + GUEST)
+# FETCH HISTORY (GET → NO CSRF)
 # =========================
 class HistoryView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
         if request.user.is_authenticated:
-            # Order by newest first for authenticated users
             history = CalculationHistory.objects.filter(
                 user=request.user
-            ).order_by('-created_at')
-
+            ).order_by("-created_at")
         else:
             if not request.session.session_key:
                 return Response([], status=status.HTTP_200_OK)
 
-            # Order by newest first and limit to 10 for guests
             history = CalculationHistory.objects.filter(
                 session_key=request.session.session_key
-            ).order_by('-created_at')[:10]
+            ).order_by("-created_at")[:10]
 
         serializer = CalculationHistorySerializer(history, many=True)
         return Response(serializer.data)
 
 
 # =========================
-# CLEAR ALL HISTORY (AUTH ONLY)
+# CLEAR ALL HISTORY (CSRF EXEMPT)
 # =========================
+@csrf_exempt
 @api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
 def clear_history(request):
@@ -142,8 +142,9 @@ def clear_history(request):
 
 
 # =========================
-# DELETE SINGLE HISTORY ITEM (AUTH ONLY)
+# DELETE SINGLE HISTORY ITEM (CSRF EXEMPT)
 # =========================
+@csrf_exempt
 @api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
 def delete_history_item(request, pk):
