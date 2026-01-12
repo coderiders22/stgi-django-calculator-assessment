@@ -14,14 +14,23 @@ from .authentication import CsrfExemptSessionAuthentication
 class CalculateView(APIView):
     """
     Handles calculator logic.
-    - Guests: limited to 10 calculations
-    - Logged-in users: unlimited
+
+    Rules:
+    - Authenticated users:
+        - Unlimited calculations
+        - Unlimited notes
+    - Guest users:
+        - Max 10 calculations
+        - Notes allowed only in 2 calculations
     """
 
     permission_classes = [AllowAny]
     authentication_classes = [CsrfExemptSessionAuthentication]
 
     def post(self, request):
+        # -------------------------
+        # Input validation
+        # -------------------------
         try:
             a = float(request.data.get("operand1"))
             b = float(request.data.get("operand2"))
@@ -36,7 +45,9 @@ class CalculateView(APIView):
         if op == "/" and b == 0:
             return Response({"error": "Division by zero"}, status=400)
 
-        # Perform calculation safely
+        # -------------------------
+        # Safe calculation
+        # -------------------------
         result = eval(f"{a}{op}{b}")
 
         data = {
@@ -44,28 +55,66 @@ class CalculateView(APIView):
             "operand2": b,
             "operator": op,
             "result": result,
-            "note": note[:500]
+            "note": note[:500],  # hard limit for safety
         }
 
+        # =========================
+        # AUTHENTICATED USER
+        # =========================
         if request.user.is_authenticated:
             data["user"] = request.user
+
+        # =========================
+        # GUEST USER
+        # =========================
         else:
+            # Ensure session exists
             if not request.session.session_key:
                 request.session.create()
 
-            data["session_key"] = request.session.session_key
+            session_key = request.session.session_key
+            data["session_key"] = session_key
 
-            # Guest calculation limit
-            if CalculationHistory.objects.filter(
-                session_key=request.session.session_key
-            ).count() >= 10:
+            # ---- Guest calculation limit (10) ----
+            total_guest_calculations = CalculationHistory.objects.filter(
+                session_key=session_key
+            ).count()
+
+            if total_guest_calculations >= 10:
                 return Response(
-                    {"error": "Guest calculation limit reached"},
+                    {
+                        "error": "Guest calculation limit reached. Login to unlock full access."
+                    },
                     status=403
                 )
 
+            # ---- Guest note limit (ONLY 2 notes allowed) ----
+            if note:
+                guest_notes_count = CalculationHistory.objects.filter(
+                    session_key=session_key
+                ).exclude(note="").count()
+
+                if guest_notes_count >= 2:
+                    return Response(
+                        {
+                            "error": (
+                                "Guest note limit reached. "
+                                "You can add notes to only 2 calculations. "
+                                "Login for unlimited notes."
+                            )
+                        },
+                        status=403
+                    )
+
+        # -------------------------
+        # Save calculation
+        # -------------------------
         CalculationHistory.objects.create(**data)
-        return Response({"result": result}, status=201)
+
+        return Response(
+            {"saved": True, "result": result},
+            status=201
+        )
 
 
 # =========================
@@ -73,9 +122,9 @@ class CalculateView(APIView):
 # =========================
 class HistoryView(APIView):
     """
-    Fetches calculation history for:
-    - Logged-in user
-    - Guest session
+    Returns calculation history:
+    - Logged-in user → full history
+    - Guest → last 10 calculations (session-based)
     """
 
     permission_classes = [AllowAny]
@@ -106,7 +155,7 @@ class HistoryView(APIView):
 def clear_history(request):
     """
     Clears all calculation history for logged-in user.
-    Guests are not allowed.
+    Guests are not allowed to clear history.
     """
     CalculationHistory.objects.filter(user=request.user).delete()
     return Response({"detail": "History cleared"})
@@ -122,5 +171,9 @@ def delete_history_item(request, pk):
     """
     Deletes a single calculation record for logged-in user.
     """
-    CalculationHistory.objects.filter(id=pk, user=request.user).delete()
+    CalculationHistory.objects.filter(
+        id=pk,
+        user=request.user
+    ).delete()
+
     return Response({"detail": "Deleted"})
