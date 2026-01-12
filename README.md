@@ -476,12 +476,6 @@ In production, admin access is restricted and not exposed to end users.
 * Email address:
 * Password:
 * Password (again):
-
-* Session-based history storage
-* Session isolation:
-
-> Credentials are shared **only for assessment/demo purposes**.
-
 ----
 ### Admin Capabilities
 
@@ -528,7 +522,7 @@ This demonstrates:
 **Developed by:** Manav Rai  
 **Institution:** Punjab Engineering College, Chandigarh  
 **Email:** [manavrai454@gmail.com](mailto:manavrai454@gmail.com)  
-**GitHub:** [github.com/manavrai454](https://github.com/coderiders22/)
+**GitHub:** [github.com/coderiders22](https://github.com/coderiders22/)
 
 ---
 
