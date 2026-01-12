@@ -71,10 +71,10 @@ class LoginView(APIView):
         if user is None:
             return Response({"error": "Invalid credentials"}, status=401)
 
-     
+        # CRITICAL: Login and force session creation
         login(request, user)
         
-      
+        # Force session modification to save
         request.session.modified = True
         request.session.save()
 

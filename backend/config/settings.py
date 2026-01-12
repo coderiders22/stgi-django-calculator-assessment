@@ -89,23 +89,6 @@ if "DATABASE_URL" in os.environ:
             ssl_require=True,
         )
     }
-# =====================
-# SESSION / CSRF (PRODUCTION SAFE)
-# =====================
-
-SESSION_ENGINE = "django.contrib.sessions.backends.db"
-
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-
-SESSION_COOKIE_SAMESITE = "None"
-CSRF_COOKIE_SAMESITE = "None"
-
-SESSION_COOKIE_HTTPONLY = True
-CSRF_COOKIE_HTTPONLY = False  # frontend needs it
-
-SESSION_COOKIE_DOMAIN = os.environ.get("SESSION_COOKIE_DOMAIN")
-CSRF_COOKIE_DOMAIN = os.environ.get("CSRF_COOKIE_DOMAIN")
 
 
 # ===============================

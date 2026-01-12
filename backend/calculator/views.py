@@ -74,7 +74,7 @@ class CalculateView(APIView):
             if guest_count >= 10:
                 return Response(
                     {
-                        "error": "Guest calculation limit reached. Log in to unlock full access."
+                        "error": "Guest limit reached. Login to unlock full access."
                     },
                     status=status.HTTP_403_FORBIDDEN
                 )

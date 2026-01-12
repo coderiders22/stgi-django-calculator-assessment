@@ -1,8 +1,7 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
 import api from '@/services/api'
 
-// Views
+
 import Welcome from '../views/Welcome.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
@@ -22,30 +21,27 @@ const router = createRouter({
   routes
 })
 
-
-// FIXED: SESSION-BASED AUTH GUARD
-
 router.beforeEach(async (to, from, next) => {
-  const isGuest = localStorage.getItem('is_guest') === 'true'
+const isGuest = localStorage.getItem('is_guest') === 'true'
 
-  // Guest can access dashboard without auth check
+  
   if (to.meta.requiresAuth && isGuest) {
     return next()
   }
 
-  // Protected routes (dashboard)
+
   if (to.meta.requiresAuth) {
     try {
       const res = await api.get('/auth/me/', { withCredentials: true })
       
     
 
-      // Check if user is authenticated
+   
       if (res.data.is_authenticated === true) {
         return next()
       }
 
-      // Not authenticated → redirect to login
+ 
       return next({ name: 'Login', query: { redirect: to.fullPath } })
     } catch (error) {
      
@@ -53,7 +49,7 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  // Guest-only routes (login/register)
+  // 🔥 Guest-only routes (login/register)
   if (to.meta.guestOnly) {
     try {
       const res = await api.get('/auth/me/', { withCredentials: true })
@@ -75,7 +71,7 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  // Allow navigation
+ 
   next()
 })
 
