@@ -1,4 +1,4 @@
-# CalculatorPro – Full-Stack Django Calculator Application
+# CalculatorPro – STGI Technical Assessment of Full-Stack Django Calculator Application
 
 **A professional, full-stack calculator application built with Django REST Framework and Vue.js**, designed to demonstrate authentication, session management, REST APIs, guest access, and admin control — as required in the Django assessment.
 
