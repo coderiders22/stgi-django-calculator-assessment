@@ -93,7 +93,7 @@ The application evolves from a simple calculator into a **production-grade, role
 * Session-based authentication
 * Secure CSRF handling
 
-```md
+
 ## API Endpoints (Phase 2)
 
 ### Authentication APIs
@@ -118,14 +118,21 @@ The application evolves from a simple calculator into a **production-grade, role
 | DELETE | /api/history/<id>/ | Delete single record | Authenticated |
 
 ---
-```
 
 
-### Permissions
 
-* **Authenticated users:** Full access
-* **Guests:** Limited access (session-based)
+### Guest Restrictions
+- Maximum 10 calculations per session
+- Notes allowed for only 2 calculations
+- Cannot clear or delete history
 
+### Authenticated User Privileges
+- Unlimited calculations
+- Unlimited notes
+- Full history access
+- Can delete individual records
+- Can clear entire history
+  
 ---
 
 ## Phase 3 – Guest Session Support 
