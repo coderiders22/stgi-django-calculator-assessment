@@ -44,6 +44,9 @@ __pycache__/
 *.njsproj
 *.sln
 *.sw?
+.env
+.env.example
+
 
 *.tsbuildinfo
 .eslintcache

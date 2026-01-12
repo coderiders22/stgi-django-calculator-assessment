@@ -1,8 +1,13 @@
 <template>
   <div class="calculator-wrapper">
-    <!-- Professional Info Banner -->
+    <!-- 
+      Professional Info Banner
+      This banner dynamically shows guest vs premium features
+      Uses computed 'isGuest' to determine user status
+    -->
     <div class="info-banner" :class="isGuest ? 'guest-mode' : 'premium-mode'">
       <div class="banner-icon">
+        <!-- Conditional icon based on user status -->
         <ShieldAlert v-if="isGuest" :size="24" />
         <CheckCircle2 v-else :size="24" />
       </div>
@@ -16,6 +21,11 @@
         <div class="banner-description" v-else>
         Congratulations! You now have full access to all premium features.
         </div>
+        
+        <!-- 
+          Feature list shows different capabilities based on user status
+          This helps users understand what they can/cannot do
+        -->
         <div class="feature-list" v-if="isGuest">
           <div class="feature-item success">
             <CheckCircle2 :size="16" />
@@ -49,19 +59,26 @@
           </div>
         </div>
       </div>
+      
+      <!-- CTA button for guest users to upgrade -->
       <button v-if="isGuest" class="upgrade-button" @click="$router.push('/login')">
         <span>Login for Full Access</span>
         <ArrowRight :size="18" />
       </button>
     </div>
 
-    <!-- Display Section -->
+    <!-- 
+      Display Section
+      Shows current calculation expression in a clean, readable format
+      Uses null-safe rendering with ?? operator
+    -->
     <div class="calculator-display">
       <div class="display-header">
         <div class="display-label">
           <CalcIcon :size="16" />
           <span>Current Calculation</span>
         </div>
+        <!-- Clear button with rotation animation on hover -->
         <button
           class="clear-btn"
           @click="clearAll"
@@ -72,6 +89,7 @@
         </button>
       </div>
       <div class="expression-display">
+        <!-- Show calculation expression or placeholder -->
         <span v-if="a !== null || b !== null" class="expression-text">
           {{ a ?? 0 }} {{ op }} {{ b ?? 0 }}
         </span>
@@ -81,8 +99,13 @@
       </div>
     </div>
 
-    <!-- Inputs Section -->
+    <!-- 
+      Inputs Section
+      All calculator inputs grouped together for better UX
+      Each input has proper labels and icons for accessibility
+    -->
     <div class="calculator-inputs">
+      <!-- First operand input with ref for programmatic focus -->
       <div class="input-group">
         <label class="input-label">
           <Hash :size="14" /> First Number
@@ -98,6 +121,10 @@
         />
       </div>
 
+      <!-- 
+        Operator selection buttons
+        Grid layout for visual balance and easy selection
+      -->
       <div class="operator-group">
         <label class="input-label">Operator</label>
         <div class="operator-buttons">
@@ -114,6 +141,7 @@
         </div>
       </div>
 
+      <!-- Second operand input with Enter key support -->
       <div class="input-group">
         <label class="input-label">
           <Hash :size="14" /> Second Number
@@ -129,7 +157,11 @@
         />
       </div>
 
-      <!-- Note Input -->
+      <!-- 
+        Note Input
+        Optional field for users to add context to their calculations
+        Max 500 chars with real-time character counter
+      -->
       <div class="input-group">
         <label class="input-label">
           <FileText :size="14" /> Note (Optional)
@@ -145,7 +177,11 @@
       </div>
     </div>
 
-    <!-- Calculate Button -->
+    <!-- 
+      Calculate Button
+      Disabled when inputs are invalid or calculation is in progress
+      Shows loading spinner during API call
+    -->
     <button
       class="calculate-btn"
       :disabled="loading || !canCalculate"
@@ -162,7 +198,12 @@
       </span>
     </button>
 
-    <!-- Result Section -->
+    <!-- 
+      Result Section
+      Only shows after successful calculation
+      Includes copy and clear functionality
+      Transition animation for smooth appearance
+    -->
     <transition name="result">
       <div v-if="result !== null" class="result-section">
         <div class="result-header">
@@ -185,7 +226,11 @@
       </div>
     </transition>
 
-    <!-- Modal -->
+    <!-- 
+      Modal Component
+      Shows error/warning messages to user
+      Controlled by showModal flag
+    -->
     <Modal
       v-if="showModal"
       :text="modalText"
@@ -196,8 +241,11 @@
 </template>
 
 <script>
+// Import API service for backend communication
 import api from '@/services/api'
 import Modal from '@/components/Modal.vue'
+
+// Import all required Lucide icons
 import {
   Calculator as CalcIcon,
   Hash,
@@ -239,17 +287,34 @@ export default {
   },
   data() {
     return {
+      // Calculator operands - null instead of 0 to distinguish empty state
       a: null,
       b: null,
+      
+      // Current operator - defaults to addition
       op: '+',
+      
+      // Stores calculation result from backend
       result: null,
+      
+      // Loading state for async operations
       loading: false,
+      
+      // Modal control flags
       showModal: false,
       modalText: '',
       modalType: 'error',
+      
+      // Clipboard copy feedback
       copied: false,
+      
+      // Current user info - null for guests
       username: null,
+      
+      // Optional note for calculation (max 500 chars)
       note: '', 
+      
+      // Operator configuration with icons and display symbols
       operators: [
         { value: '+', display: '+', icon: 'Plus' },
         { value: '-', display: '−', icon: 'Minus' },
@@ -259,95 +324,182 @@ export default {
     }
   },
   computed: {
+    /**
+     * Checks if both operands are entered
+     * Used to enable/disable calculate button
+     */
     canCalculate() {
       return this.a !== null && this.b !== null
     },
+    
+    /**
+     * Determines if user is in guest mode
+     * Checks both authentication status and localStorage flag
+     */
     isGuest() {
       return !this.username && localStorage.getItem('is_guest') === 'true'
     }
   },
   methods: {
+    /**
+     * Fetches current user data from backend
+     * Called on mount and route changes to keep auth state updated
+     */
     async fetchUser() {
       try {
         const res = await api.get('/auth/me/', { withCredentials: true })
         
         if (res.data.is_authenticated) {
           this.username = res.data.username
+          // Remove guest flag if user is authenticated
           localStorage.removeItem('is_guest')
         } else {
           this.username = null
         }
       } catch (error) {
+        // If API fails, treat as non-authenticated
         this.username = null
       }
     },
+    
+    /**
+     * Handles first operand input
+     * Converts empty string to null for proper validation
+     */
     onInputA(e) {
       this.a = e.target.value === '' ? null : parseFloat(e.target.value)
     },
+    
+    /**
+     * Handles second operand input
+     * Converts empty string to null for proper validation
+     */
     onInputB(e) {
       this.b = e.target.value === '' ? null : parseFloat(e.target.value)
     },
+    
+    /**
+     * Main calculation method
+     * Sends request to Django backend and handles response/errors
+     * Validates division by zero before sending request
+     */
     async calculate() {
+      // Early return if inputs not valid
       if (!this.canCalculate) return
+      
+      // Client-side validation for division by zero
       if (this.op === '/' && this.b === 0) {
         this.modalText = 'Cannot divide by zero.'
         this.modalType = 'error'
         this.showModal = true
         return
       }
+      
+      // Set loading state and clear previous result
       this.loading = true
       this.result = null
+      
       try {
+        // Send calculation request to Django REST API
         const res = await api.post('/calculate/', {
           operand1: this.a,
           operand2: this.b,
           operator: this.op,
-          note: this.note  //  Send note
+          note: this.note  // Include optional note
         })
+        
+        // Store result from backend
         this.result = res.data.result
-        this.note = ''  // Clear note after successful calculation
+        
+        // Clear note after successful calculation
+        this.note = ''
+        
+        // Emit event to parent (for history refresh)
         this.$emit('calculated')
+        
       } catch (err) {
+        // Handle specific error cases
         if (err.response?.status === 403) {
+          // Guest limit reached
           this.modalText = err.response.data.error || 'Limit reached. Login to unlock full access.'
           this.modalType = 'warning'
         } else {
+          // Generic error
           this.modalText = err.response?.data?.error || 'Calculation failed.'
           this.modalType = 'error'
         }
         this.showModal = true
+        
       } finally {
+        // Always stop loading spinner
         this.loading = false
       }
     },
+    
+    /**
+     * Formats result with proper number formatting
+     * Uses Intl API for locale-aware number display
+     * Limits to 10 decimal places to avoid floating point issues
+     */
     formatResult(value) {
       return new Intl.NumberFormat('en-US', {
         maximumFractionDigits: 10
       }).format(value)
     },
+    
+    /**
+     * Copies result to clipboard
+     * Shows temporary "Copied!" feedback for 2 seconds
+     */
     async copyResult() {
       await navigator.clipboard.writeText(String(this.result))
       this.copied = true
       setTimeout(() => (this.copied = false), 2000)
     },
+    
+    /**
+     * Clears just the result display
+     * Keeps input values intact
+     */
     clearResult() {
       this.result = null
     },
+    
+    /**
+     * Resets entire calculator to initial state
+     * Also focuses first input for quick restart
+     */
     clearAll() {
       this.a = null
       this.b = null
       this.op = '+'
       this.result = null
-      this.note = ''  // Clear note
+      this.note = ''
+      // Focus first input for better UX
       this.$refs.firstInput?.focus()
     },
+    
+    /**
+     * Keyboard navigation helper
+     * Moves focus from first to second input on Enter key
+     */
     focusSecondInput() {
       this.$refs.secondInput?.focus()
     }
   },
+  
+  /**
+   * Component lifecycle hook
+   * Fetches user data when component mounts
+   */
   async mounted() {
     await this.fetchUser()
   },
+  
+  /**
+   * Watch for route changes
+   * Refetch user data when navigating (e.g., after login/logout)
+   */
   watch: {
     '$route'() {
       this.fetchUser()
@@ -357,13 +509,18 @@ export default {
 </script>
 
 <style scoped>
+/* Calculator main wrapper */
 .calculator-wrapper {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-/* Professional Info Banner */
+/* ==================== Info Banner Styles ==================== */
+/* 
+  Professional banner showing user status and features
+  Uses different color schemes for guest vs premium modes
+*/
 .info-banner {
   position: relative;
   display: flex;
@@ -378,6 +535,7 @@ export default {
   animation: slideDown 0.5s ease-out;
 }
 
+/* Smooth slide-down entrance animation */
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -389,21 +547,25 @@ export default {
   }
 }
 
+/* Guest mode styling - amber/orange theme */
 .info-banner.guest-mode {
   background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.15));
   border-color: rgba(245, 158, 11, 0.3);
 }
 
+/* Premium mode styling - green theme */
 .info-banner.premium-mode {
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
   border-color: rgba(16, 185, 129, 0.3);
 }
 
+/* Subtle lift effect on hover */
 .info-banner:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 
+/* Banner icon container */
 .banner-icon {
   flex-shrink: 0;
   width: 48px;
@@ -425,10 +587,12 @@ export default {
   color: white;
 }
 
+/* Fun rotation effect on banner hover */
 .info-banner:hover .banner-icon {
   transform: scale(1.1) rotate(5deg);
 }
 
+/* Banner text content */
 .banner-content {
   flex: 1;
   display: flex;
@@ -465,6 +629,7 @@ export default {
   color: #047857;
 }
 
+/* Feature list showing what user can/cannot do */
 .feature-list {
   display: flex;
   flex-direction: column;
@@ -482,6 +647,7 @@ export default {
   transition: transform 0.2s ease;
 }
 
+/* Subtle slide-in effect on hover */
 .feature-item:hover {
   transform: translateX(4px);
 }
@@ -499,6 +665,7 @@ export default {
   color: #065f46;
 }
 
+/* Upgrade/Login CTA button */
 .upgrade-button {
   flex-shrink: 0;
   display: flex;
@@ -528,7 +695,8 @@ export default {
   transform: translateY(0);
 }
 
-/* Display Section */
+/* ==================== Display Section ==================== */
+/* Shows current calculation expression */
 .calculator-display {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(139, 92, 246, 0.08));
   border: 1px solid rgba(59, 130, 246, 0.15);
@@ -552,6 +720,7 @@ export default {
   font-weight: 600;
 }
 
+/* Clear button with rotation animation */
 .clear-btn {
   width: 32px;
   height: 32px;
@@ -572,6 +741,7 @@ export default {
   transform: rotate(180deg);
 }
 
+/* Expression display area */
 .expression-display {
   font-size: 2rem;
   font-weight: 700;
@@ -591,7 +761,7 @@ export default {
   font-weight: 500;
 }
 
-/* Inputs Section */
+/* ==================== Input Section ==================== */
 .calculator-inputs {
   display: flex;
   flex-direction: column;
@@ -604,6 +774,7 @@ export default {
   gap: 0.6rem;
 }
 
+/* Input labels with icons */
 .input-label {
   display: flex;
   align-items: center;
@@ -613,6 +784,7 @@ export default {
   font-weight: 600;
 }
 
+/* Number input fields */
 .input-field {
   width: 100%;
   padding: 1rem 1.25rem;
@@ -625,6 +797,7 @@ export default {
   transition: all 0.3s ease;
 }
 
+/* Focus state with blue glow */
 .input-field:focus {
   outline: none;
   background: white;
@@ -637,7 +810,8 @@ export default {
   font-weight: 400;
 }
 
-/* Note Field Styling */
+/* ==================== Note Field ==================== */
+/* Textarea for calculation notes */
 .note-field {
   width: 100%;
   padding: 1rem 1.25rem;
@@ -665,6 +839,7 @@ export default {
   font-weight: 400;
 }
 
+/* Character counter for note field */
 .char-count {
   font-size: 0.8rem;
   color: var(--text-secondary);
@@ -672,13 +847,14 @@ export default {
   margin-top: 0.25rem;
 }
 
-/* Operator Buttons */
+/* ==================== Operator Buttons ==================== */
 .operator-group {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 }
 
+/* Grid layout for 4 operators */
 .operator-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -707,6 +883,7 @@ export default {
   transform: translateY(-2px);
 }
 
+/* Active operator highlighted in blue */
 .operator-btn.active {
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   border-color: var(--primary);
@@ -719,7 +896,7 @@ export default {
   font-weight: 600;
 }
 
-/* Calculate Button */
+/* ==================== Calculate Button ==================== */
 .calculate-btn {
   width: 100%;
   padding: 1.25rem;
@@ -740,6 +917,7 @@ export default {
   box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
 }
 
+/* Disabled state when inputs invalid or loading */
 .calculate-btn:disabled {
   background: linear-gradient(135deg, #cbd5e1, #94a3b8);
   cursor: not-allowed;
@@ -754,6 +932,7 @@ export default {
   gap: 0.75rem;
 }
 
+/* Loading spinner animation */
 .spinner {
   display: inline-block;
   width: 18px;
@@ -768,7 +947,7 @@ export default {
   to { transform: rotate(360deg); }
 }
 
-/* Result Section */
+/* ==================== Result Section ==================== */
 .result-section {
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.08));
   border: 1px solid rgba(16, 185, 129, 0.2);
@@ -786,6 +965,7 @@ export default {
   margin-bottom: 1rem;
 }
 
+/* Large, prominent result display */
 .result-value {
   font-size: 3rem;
   font-weight: 800;
@@ -800,6 +980,7 @@ export default {
   gap: 0.75rem;
 }
 
+/* Copy and Clear buttons */
 .result-action-btn {
   flex: 1;
   display: flex;
@@ -823,7 +1004,8 @@ export default {
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
 }
 
-/* Animations */
+/* ==================== Animations ==================== */
+/* Vue transition for result appearance/disappearance */
 .result-enter-active,
 .result-leave-active {
   transition: all 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -839,7 +1021,8 @@ export default {
   transform: translateY(20px) scale(0.95);
 }
 
-/* Responsive Design */
+/* ==================== Responsive Design ==================== */
+/* Tablet and below - adjust banner layout */
 @media (max-width: 768px) {
   .info-banner {
     flex-direction: column;
@@ -856,11 +1039,13 @@ export default {
     justify-content: center;
   }
 
+  /* Stack operators in 2x2 grid on smaller screens */
   .operator-buttons {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
+/* Mobile - further size adjustments */
 @media (max-width: 640px) {
   .expression-display {
     font-size: 1.5rem;
@@ -870,6 +1055,7 @@ export default {
     font-size: 2.5rem;
   }
 
+  /* Stack result action buttons vertically */
   .result-actions {
     flex-direction: column;
   }

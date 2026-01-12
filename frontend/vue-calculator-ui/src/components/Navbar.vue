@@ -1,7 +1,16 @@
+<!-- 
+  Main Navigation Component
+  - Responsive navbar with mobile sidebar
+  - Handles authentication states (logged in, guest, not logged in)
+  - Syncs with backend on mount to verify auth status
+  - Supports hash-based navigation for same-page sections
+-->
 <template>
+  <!-- Main navbar: fixed at top, changes style on scroll and based on route -->
   <nav class="navbar" :class="{ scrolled: isScrolled, transparent: isTransparent }">
     <div class="nav-container">
-      <!-- Logo -->
+      
+      <!-- Logo Section: links to home page -->
       <router-link to="/" class="logo-wrapper">
         <div class="logo-icon">
           <Calculator :size="24" />
@@ -9,8 +18,9 @@
         <span class="logo-text">CalculatorPro</span>
       </router-link>
 
-      <!-- Desktop Navigation -->
+      <!-- Desktop Navigation Links: hidden on mobile -->
       <div class="nav-links">
+        <!-- Dynamic nav links: loops through navLinks array -->
         <a
           v-for="link in navLinks"
           :key="link.path"
@@ -23,7 +33,7 @@
           <span>{{ link.label }}</span>
         </a>
         
-        <!-- Account Button (Professional Design) - Show for both guest and logged in users -->
+        <!-- Account Button: shows for authenticated or guest users -->
         <a
           v-if="username || isGuest"
           @click.prevent="handleNavClick({ path: '/dashboard', isHash: false })"
@@ -33,35 +43,39 @@
         >
           <User :size="18" />
           <span>Account</span>
+          <!-- Animated arrow indicator -->
           <ChevronRight :size="16" class="account-arrow" />
         </a>
       </div>
 
-      <!-- Actions -->
+      <!-- Right side actions: auth buttons or user info -->
       <div class="nav-actions">
-        <!-- ===== GUEST MODE BADGE (DESKTOP) ===== -->
+        
+        <!-- GUEST MODE BADGE: shows when user is in guest mode -->
         <template v-if="isGuest && !username">
           <div class="user-badge guest-badge">
             <Shield :size="16" />
             <span>Guest Mode</span>
           </div>
+          <!-- Exit guest mode button -->
           <button class="logout-btn" @click="exitGuest" title="Exit Guest Mode">
             <LogOut :size="18" />
           </button>
         </template>
 
-        <!-- ===== LOGGED IN USER BADGE ===== -->
+        <!-- LOGGED IN USER BADGE: shows username when authenticated -->
         <template v-else-if="username">
           <div class="user-badge user-badge-active">
             <User :size="16" />
             <span>{{ username }}</span>
           </div>
+          <!-- Sign out button -->
           <button class="logout-btn" @click="logout" title="Sign Out">
             <LogOut :size="18" />
           </button>
         </template>
 
-        <!-- ===== NOT LOGGED IN (DESKTOP) ===== -->
+        <!-- AUTH BUTTONS: shows when not logged in or guest -->
         <div v-else class="auth-buttons">
           <router-link to="/login" class="btn btn-ghost">
             <LogIn :size="16" /> Sign in
@@ -71,7 +85,7 @@
           </router-link>
         </div>
 
-        <!-- Mobile Menu -->
+        <!-- Mobile Menu Toggle: only visible on mobile -->
         <button class="mobile-menu-btn" @click="mobileMenuOpen = !mobileMenuOpen">
           <Menu v-if="!mobileMenuOpen" />
           <X v-else />
@@ -79,10 +93,13 @@
       </div>
     </div>
 
-    <!-- ===== MOBILE SIDEBAR ===== -->
+    <!-- MOBILE SIDEBAR: teleported to body for proper z-index stacking -->
     <teleport to="body">
+      <!-- Slide transition for smooth open/close -->
       <transition name="sidebar">
         <div v-if="mobileMenuOpen" class="mobile-sidebar">
+          
+          <!-- Sidebar header with logo and close button -->
           <div class="sidebar-header">
             <span class="logo-text">CalculatorPro</span>
             <button class="sidebar-close-btn" @click="mobileMenuOpen = false">
@@ -90,7 +107,7 @@
             </button>
           </div>
 
-          <!-- Guest / User Card -->
+          <!-- User info card: shows guest or authenticated user details -->
           <div
             v-if="username || isGuest"
             class="sidebar-user-info"
@@ -106,7 +123,7 @@
             </div>
           </div>
 
-          <!-- Links -->
+          <!-- Sidebar navigation links -->
           <div class="sidebar-links">
             <a
               v-for="link in navLinks"
@@ -120,7 +137,7 @@
               {{ link.label }}
             </a>
             
-            <!-- Account Link (Mobile - Professional Design) -->
+            <!-- Mobile account link with special styling -->
             <a
               v-if="username || isGuest"
               @click.prevent="handleNavClick({ path: '/dashboard', isHash: false })"
@@ -134,13 +151,15 @@
             </a>
           </div>
 
-          <!-- Actions -->
+          <!-- Sidebar footer with auth actions -->
           <div class="sidebar-actions">
+            <!-- Logout for authenticated users -->
             <button v-if="username" class="sidebar-logout" @click="logout">
               <LogOut :size="18" />
               Sign Out
             </button>
 
+            <!-- Exit guest mode button -->
             <button
               v-else-if="isGuest"
               class="sidebar-logout"
@@ -150,6 +169,7 @@
               Exit Guest Mode
             </button>
 
+            <!-- Auth buttons for non-authenticated users -->
             <div v-else class="sidebar-auth-buttons">
               <router-link to="/login" class="sidebar-btn ghost" @click="mobileMenuOpen = false">
                 <LogIn :size="18" />
@@ -164,6 +184,7 @@
         </div>
       </transition>
 
+      <!-- Backdrop: darkens background when sidebar is open -->
       <div
         v-if="mobileMenuOpen"
         class="sidebar-backdrop"
@@ -172,7 +193,9 @@
     </teleport>
   </nav>
 </template>
+
 <script>
+// Importing all required icons from lucide-vue-next
 import {
   Calculator,
   Home,
@@ -214,102 +237,123 @@ export default {
 
   data() {
     return {
-      isScrolled: false,
-      mobileMenuOpen: false,
-      userMenuOpen: false,
+      isScrolled: false,  // Tracks if user has scrolled down
+      mobileMenuOpen: false,  // Controls mobile sidebar visibility
+      userMenuOpen: false,  // Controls user dropdown menu (currently unused)
 
-      // 🔥 IMPORTANT
+      // Load username from localStorage for instant display (prevents flicker)
       username: localStorage.getItem('username'),
-      authChecked: false,
+      authChecked: false,  // Flag to know when backend sync is complete
 
+      // Navigation links configuration
       navLinks: [
         { label: 'Home', path: '/', icon: 'Home' },
-        { label: 'Features', path: '/#features', icon: 'Zap', isHash: true },
+        { label: 'Features', path: '/#features', icon: 'Zap', isHash: true },  // isHash flag for scroll behavior
         { label: 'Access Modes', path: '/#access', icon: 'Star', isHash: true }
       ]
     }
   },
 
   computed: {
+    // Check if user is authenticated
     isAuthenticated() {
       return !!this.username
     },
 
+    // Check if user is in guest mode (not authenticated but has guest flag)
     isGuest() {
       return !this.isAuthenticated && localStorage.getItem('is_guest') === 'true'
     },
 
+    // Transparent navbar only on homepage when not scrolled
     isTransparent() {
       return this.$route.path === '/' && !this.isScrolled
     }
   },
 
   mounted() {
+    // Listen for scroll events to add shadow to navbar
     window.addEventListener('scroll', () => {
       this.isScrolled = window.scrollY > 20
     })
 
-    // 🔥 Sync with backend (no flicker)
+    // Sync authentication state with backend on component mount
     this.syncAuth()
   },
 
   methods: {
+    // Verifies authentication with backend and updates local state
     async syncAuth() {
       try {
         const res = await api.get('/auth/me/', { withCredentials: true })
 
         if (res.data.is_authenticated) {
+          // User is authenticated: update username
           this.username = res.data.username
           localStorage.setItem('username', res.data.username)
-          localStorage.removeItem('is_guest')
+          localStorage.removeItem('is_guest')  // Clear guest flag if present
         } else {
+          // Not authenticated: clear auth data
           this.clearAuth()
         }
       } catch {
+        // API call failed: assume not authenticated
         this.clearAuth()
       } finally {
-        this.authChecked = true
+        this.authChecked = true  // Mark sync as complete
       }
     },
 
+    // Clears authentication data from component and localStorage
     clearAuth() {
       this.username = null
       localStorage.removeItem('username')
     },
 
+    // Closes all open menus
     closeMenus() {
       this.userMenuOpen = false
       this.mobileMenuOpen = false
     },
 
+    // Handles user logout
     async logout() {
       try {
+        // Call backend logout endpoint
         await api.post('/auth/logout/', {}, { withCredentials: true })
       } catch (e) {
         console.warn('Logout failed (safe to ignore)')
       }
 
+      // Clear all auth data
       this.clearAuth()
       localStorage.removeItem('is_guest')
       this.closeMenus()
+      
+      // Redirect to login page
       this.$router.push('/login')
     },
 
+    // Exits guest mode and redirects to login
     exitGuest() {
       localStorage.removeItem('is_guest')
       this.closeMenus()
       this.$router.push('/login')
     },
 
+    // Checks if a nav link is currently active
     isActive(path) {
-      if (path.startsWith('/#')) return false
+      if (path.startsWith('/#')) return false  // Hash links never show as active
       return this.$route.path === path
     },
 
+    // Handles navigation link clicks (supports both routes and hash scrolls)
     handleNavClick(link) {
       if (link.isHash) {
+        // Extract section ID from hash (e.g., '/#features' -> 'features')
         const sectionId = link.path.substring(2)
 
+        // If not on homepage, navigate there first then scroll
         if (this.$route.path !== '/') {
           this.$router.push('/').then(() => {
             setTimeout(() => {
@@ -317,18 +361,21 @@ export default {
                 behavior: 'smooth',
                 block: 'start'
               })
-            }, 100)
+            }, 100)  // Small delay to ensure page is loaded
           })
         } else {
+          // Already on homepage: just scroll to section
           document.getElementById(sectionId)?.scrollIntoView({
             behavior: 'smooth',
             block: 'start'
           })
         }
       } else {
+        // Regular route navigation
         this.$router.push(link.path)
       }
 
+      // Close mobile menu after navigation
       this.closeMenus()
     }
   }
@@ -336,20 +383,25 @@ export default {
 </script>
 
 <style scoped>
-/* NAVBAR + SIDEBAR MOBILE MENU */
+/* ============================================
+   NAVBAR STYLES
+   ============================================ */
+
+/* Fixed navbar with glassmorphism effect */
 .navbar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 999997;
+  z-index: 999997;  /* High z-index to stay above content */
   background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
+  backdrop-filter: blur(30px);  /* Creates frosted glass effect */
+  -webkit-backdrop-filter: blur(30px);  /* Safari support */
   border-bottom: 1px solid rgba(0,0,0,0.08);
   transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
+/* Transparent state on homepage before scroll */
 .navbar.transparent {
   background: rgba(255,255,255,0.8);
   backdrop-filter: blur(30px);
@@ -357,6 +409,7 @@ export default {
   border-bottom: none;
 }
 
+/* Scrolled state adds shadow for depth */
 .navbar.scrolled {
   background: rgba(255,255,255,0.98);
   backdrop-filter: blur(30px);
@@ -364,6 +417,7 @@ export default {
   box-shadow: 0 4px 16px rgba(0,0,0,0.06);
 }
 
+/* Main container with max-width for large screens */
 .nav-container {
   max-width: 1480px;
   margin: 0 auto;
@@ -375,18 +429,21 @@ export default {
   gap: 2rem;
 }
 
-/* Logo */
+/* ============================================
+   LOGO SECTION
+   ============================================ */
+
 .logo-wrapper {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   text-decoration: none;
   transition: all 0.3s ease;
-  flex-shrink: 0;
+  flex-shrink: 0;  /* Prevents logo from shrinking */
 }
 
 .logo-wrapper:hover {
-  transform: translateY(-2px);
+  transform: translateY(-2px);  /* Subtle lift on hover */
 }
 
 .logo-icon {
@@ -409,12 +466,15 @@ export default {
   -webkit-text-fill-color: transparent;
 }
 
-/* Desktop Nav Links */
+/* ============================================
+   DESKTOP NAVIGATION LINKS
+   ============================================ */
+
 .nav-links {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  flex: 1;
+  flex: 1;  /* Takes available space */
   justify-content: center;
   margin: 0 auto;
 }
@@ -444,7 +504,7 @@ export default {
   font-weight: 600;
 }
 
-/* Account Link - Inviting Theme-Matching Style with Arrow */
+/* Special styling for Account link - premium look */
 .nav-link.account-link {
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.1) 100%);
   color: #6366f1;
@@ -458,6 +518,7 @@ export default {
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* Shimmer effect on hover */
 .nav-link.account-link::before {
   content: '';
   position: absolute;
@@ -470,7 +531,7 @@ export default {
 }
 
 .nav-link.account-link:hover::before {
-  left: 100%;
+  left: 100%;  /* Moves shimmer across */
 }
 
 .nav-link.account-link:hover {
@@ -495,6 +556,7 @@ export default {
               inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
+/* Animated arrow - continuous movement */
 .account-arrow {
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   margin-left: 0.25rem;
@@ -502,15 +564,14 @@ export default {
 }
 
 @keyframes arrowMoveContinuous {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(6px);
-  }
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
 }
 
-/* Desktop Auth & User Menu */
+/* ============================================
+   USER BADGES AND AUTH BUTTONS
+   ============================================ */
+
 .nav-actions {
   display: flex;
   align-items: center;
@@ -519,7 +580,7 @@ export default {
   margin-left: auto;
 }
 
-/* User Badge (Simple indicator) */
+/* User badge - shows username or guest status */
 .user-badge {
   display: flex;
   align-items: center;
@@ -531,6 +592,7 @@ export default {
   transition: all 0.3s ease;
 }
 
+/* Guest mode badge styling */
 .guest-badge {
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));
   border: 1px dashed #f59e0b;
@@ -541,6 +603,7 @@ export default {
   color: #d97706;
 }
 
+/* Authenticated user badge styling */
 .user-badge-active {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(37, 99, 235, 0.08));
   border: 1px solid rgba(59, 130, 246, 0.3);
@@ -551,7 +614,7 @@ export default {
   color: #3b82f6;
 }
 
-/* Logout Button */
+/* Logout button */
 .logout-btn {
   display: flex;
   align-items: center;
@@ -576,12 +639,14 @@ export default {
   transform: translateY(0);
 }
 
+/* Auth buttons container */
 .auth-buttons {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
+/* Base button styles */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -594,6 +659,7 @@ export default {
   transition: all 0.3s ease;
 }
 
+/* Ghost button (outlined) */
 .btn-ghost {
   background: transparent;
   border: 1.5px solid rgba(0,0,0,0.15);
@@ -605,6 +671,7 @@ export default {
   border-color: rgba(0,0,0,0.25);
 }
 
+/* Primary button (filled with gradient) */
 .btn-primary {
   background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;
@@ -617,7 +684,10 @@ export default {
   box-shadow: 0 6px 18px rgba(59,130,246,0.35);
 }
 
-/* Mobile Menu Toggle */
+/* ============================================
+   MOBILE MENU BUTTON
+   ============================================ */
+
 .mobile-menu-btn {
   background: none;
   border: none;
@@ -626,14 +696,17 @@ export default {
   padding: 0.5rem;
   border-radius: 8px;
   transition: background 0.2s;
-  display: none;
+  display: none;  /* Hidden by default, shown on mobile */
 }
 
 .mobile-menu-btn:hover {
   background: rgba(0,0,0,0.05);
 }
 
-/* MOBILE SIDEBAR */
+/* ============================================
+   MOBILE SIDEBAR
+   ============================================ */
+
 .mobile-sidebar {
   position: fixed !important;
   top: 0 !important;
@@ -643,12 +716,13 @@ export default {
   max-width: 85vw;
   background: white !important;
   box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15) !important;
-  z-index: 2147483647 !important;
+  z-index: 2147483647 !important;  /* Maximum z-index */
   display: flex;
   flex-direction: column;
   overflow-y: auto;
 }
 
+/* Sidebar header */
 .sidebar-header {
   display: flex;
   align-items: center;
@@ -658,6 +732,7 @@ export default {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.03), rgba(139, 92, 246, 0.03));
 }
 
+/* Close button in sidebar */
 .sidebar-close-btn {
   background: rgba(0, 0, 0, 0.05);
   border: none;
@@ -677,6 +752,7 @@ export default {
   color: #1e293b;
 }
 
+/* User info card in sidebar */
 .sidebar-user-info {
   display: flex;
   align-items: center;
@@ -688,11 +764,13 @@ export default {
   border: 1px solid rgba(59, 130, 246, 0.12);
 }
 
+/* Guest variant of user info */
 .sidebar-user-info.guest {
   border: 1px solid rgba(245, 158, 11, 0.4);
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));
 }
 
+/* User avatar in sidebar */
 .user-avatar-large {
   width: 52px;
   height: 52px;
@@ -705,9 +783,10 @@ export default {
   flex-shrink: 0;
 }
 
+/* User details text */
 .user-details {
   flex: 1;
-  min-width: 0;
+  min-width: 0;  /* Allows text truncation */
 }
 
 .user-details .user-name {
@@ -728,11 +807,13 @@ export default {
   text-overflow: ellipsis;
 }
 
+/* Sidebar links container */
 .sidebar-links {
   flex: 1;
   padding: 0.5rem 1.25rem 1.5rem;
 }
 
+/* Individual sidebar link */
 .sidebar-link {
   display: flex;
   align-items: center;
@@ -759,7 +840,7 @@ export default {
   font-weight: 600;
 }
 
-/* Account Link Mobile - Inviting Theme-Matching Style with Arrow */
+/* Mobile account link - premium styling */
 .sidebar-link.account-link-mobile {
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.12) 100%);
   color: #6366f1;
@@ -776,6 +857,7 @@ export default {
   justify-content: space-between;
 }
 
+/* Shimmer effect for mobile account link */
 .sidebar-link.account-link-mobile::before {
   content: '';
   position: absolute;
@@ -813,19 +895,22 @@ export default {
               inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
+/* Animated arrow in mobile account link */
 .account-arrow-mobile {
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   margin-left: auto;
   animation: arrowMoveContinuous 1.2s ease-in-out infinite;
 }
 
+/* Sidebar actions footer */
 .sidebar-actions {
-  margin-top: auto;
+  margin-top: auto;  /* Pushes to bottom */
   padding: 1.25rem;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
   background: #ffffff;
 }
 
+/* Logout button in sidebar */
 .sidebar-logout {
   width: 100%;
   padding: 0.8rem;
@@ -846,12 +931,14 @@ export default {
   background: rgba(239, 68, 68, 0.15);
 }
 
+/* Auth buttons container in sidebar */
 .sidebar-auth-buttons {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
+/* Sidebar button base styles */
 .sidebar-btn {
   padding: 0.875rem 1rem;
   border-radius: 10px;
@@ -866,6 +953,7 @@ export default {
   transition: all 0.2s;
 }
 
+/* Ghost variant in sidebar */
 .sidebar-btn.ghost {
   background: transparent;
   border: 2px solid #3b82f6;
@@ -876,6 +964,7 @@ export default {
   background: rgba(59, 130, 246, 0.08);
 }
 
+/* Primary variant in sidebar */
 .sidebar-btn.primary {
   background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;
@@ -888,16 +977,20 @@ export default {
   box-shadow: 0 6px 18px rgba(59, 130, 246, 0.4);
 }
 
-/* Sidebar Backdrop */
+/* Sidebar backdrop - darkens background */
 .sidebar-backdrop {
   position: fixed !important;
   inset: 0 !important;
   background: rgba(0, 0, 0, 0.5) !important;
-  z-index: 2147483646 !important;
-  backdrop-filter: blur(4px);
+  z-index: 2147483646 !important;  /* Just below sidebar */
+  backdrop-filter: blur(4px);  /* Blur effect */
 }
 
-/* Animations */
+/* ============================================
+   TRANSITION ANIMATIONS
+   ============================================ */
+
+/* Slide-in animation for sidebar */
 .sidebar-enter-active,
 .sidebar-leave-active {
   transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -905,10 +998,14 @@ export default {
 
 .sidebar-enter-from,
 .sidebar-leave-to {
-  transform: translateX(100%);
+  transform: translateX(100%);  /* Slides in from right */
 }
 
-/* Responsive */
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================ */
+
+/* Tablet and mobile: hide desktop nav, show mobile menu */
 @media (max-width: 1024px) {
   .nav-links,
   .auth-buttons,
@@ -922,6 +1019,7 @@ export default {
   }
 }
 
+/* Small mobile adjustments */
 @media (max-width: 380px) {
   .mobile-sidebar {
     width: 280px;

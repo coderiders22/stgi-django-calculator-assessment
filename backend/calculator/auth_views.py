@@ -11,10 +11,16 @@ from .authentication import CsrfExemptSessionAuthentication
 
 
 # =========================
-# CSRF COOKIE
+# CSRF COOKIE ENDPOINT
 # =========================
 @method_decorator(ensure_csrf_cookie, name="dispatch")
 class CSRFView(APIView):
+    """
+    Called once from frontend on app load.
+    Purpose:
+    - Sets CSRF cookie in browser
+    - Required for session-based authentication
+    """
     permission_classes = [AllowAny]
 
     def get(self, request):
@@ -25,6 +31,11 @@ class CSRFView(APIView):
 # REGISTER
 # =========================
 class RegisterView(APIView):
+    """
+    Registers a new user and logs them in immediately.
+    No email/extra fields needed as per assessment scope.
+    """
+
     permission_classes = [AllowAny]
     authentication_classes = [CsrfExemptSessionAuthentication]
 
@@ -32,13 +43,18 @@ class RegisterView(APIView):
         username = request.data.get("username")
         password = request.data.get("password")
 
+        # Basic validation
         if not username or not password:
             return Response({"error": "Username and password required"}, status=400)
 
+        # Prevent duplicate users
         if User.objects.filter(username=username).exists():
             return Response({"error": "User already exists"}, status=400)
 
+        # Create user
         user = User.objects.create_user(username=username, password=password)
+
+        # Auto-login after registration
         login(request, user)
         request.session.save()
 
@@ -52,6 +68,10 @@ class RegisterView(APIView):
 # LOGIN
 # =========================
 class LoginView(APIView):
+    """
+    Logs user in using Django session authentication.
+    """
+
     permission_classes = [AllowAny]
     authentication_classes = [CsrfExemptSessionAuthentication]
 
@@ -74,9 +94,14 @@ class LoginView(APIView):
 
 
 # =========================
-# LOGOUT (🔥 FIXED)
+# LOGOUT
 # =========================
 class LogoutView(APIView):
+    """
+    Logs out authenticated user.
+    Session is fully cleared.
+    """
+
     permission_classes = [IsAuthenticated]
     authentication_classes = [CsrfExemptSessionAuthentication]
 
@@ -90,6 +115,12 @@ class LogoutView(APIView):
 # AUTH STATUS
 # =========================
 class MeView(APIView):
+    """
+    Used by frontend to check:
+    - Is user logged in?
+    - What is the username?
+    """
+
     permission_classes = [AllowAny]
 
     def get(self, request):

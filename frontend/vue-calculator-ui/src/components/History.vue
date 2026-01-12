@@ -1,13 +1,14 @@
 <!-- components/History.vue -->
 <template>
   <div class="history-wrapper">
-    <!-- Header -->
+    <!-- Header Section: Displays total count and action buttons -->
     <div class="history-header">
       <div class="history-count">
         <span class="count-number">{{ history.length }}</span>
         <span class="count-label">calculations</span>
       </div>
       <div class="header-actions">
+        <!-- Refresh button with loading animation -->
         <button
           class="action-button"
           :class="{ spinning: loading }"
@@ -17,6 +18,7 @@
         >
           <RefreshCw :size="16" />
         </button>
+        <!-- Clear all button - only visible for authenticated users -->
         <button
           v-if="!isGuest && history.length > 0"
           class="action-button clear"
@@ -28,13 +30,13 @@
       </div>
     </div>
 
-    <!-- Loading State -->
+    <!-- Loading State: Shows spinner while fetching data -->
     <div v-if="loading" class="loading-state">
       <div class="loading-spinner"></div>
       <p>Loading history...</p>
     </div>
 
-    <!-- Empty State -->
+    <!-- Empty State: Displayed when no calculations exist -->
     <div v-else-if="history.length === 0" class="empty-state">
       <div class="empty-icon">
         <Calculator :size="32" />
@@ -45,7 +47,7 @@
       </p>
     </div>
 
-    <!-- History List -->
+    <!-- History List: Renders calculation items with smooth transitions -->
     <transition-group
       v-else
       name="list"
@@ -58,26 +60,30 @@
         class="history-item"
       >
         <div class="item-content">
+          <!-- Icon indicator for each calculation -->
           <div class="item-icon">
             <Calculator :size="18" />
           </div>
           <div class="item-details">
+            <!-- Expression display: operand1 operator operand2 -->
             <div class="expression">
               <span class="operand">{{ formatNumber(item.operand1) }}</span>
               <span class="operator">{{ formatOperator(item.operator) }}</span>
               <span class="operand">{{ formatNumber(item.operand2) }}</span>
             </div>
+            <!-- Result line with equal sign -->
             <div class="result-line">
               <Equal :size="14" />
               <span class="result">{{ formatNumber(item.result) }}</span>
             </div>
-            <!-- Display Note if exists -->
+            <!-- Note display: Shows user-added note if exists -->
             <div v-if="item.note" class="note-display">
               <FileText :size="12" />
               <span>{{ item.note }}</span>
             </div>
           </div>
         </div>
+        <!-- Action buttons: Copy and Delete (visible on hover) -->
         <div class="item-actions">
           <button
             class="item-action-btn"
@@ -152,7 +158,7 @@
       </transition>
     </teleport>
 
-    <!-- Success Modal -->
+    <!-- Success Modal: Shows feedback after successful operations -->
     <teleport to="body">
       <transition name="modal">
         <div v-if="showSuccessModal" class="modal-overlay" @click.self="showSuccessModal = false">
@@ -178,7 +184,10 @@
 </template>
 
 <script>
+// Import API service for backend communication
 import api from '@/services/api'
+
+// Import Lucide icons for UI elements
 import {
   Calculator,
   History as HistoryIcon,
@@ -195,6 +204,7 @@ import {
 export default {
   name: 'History',
   
+  // Props received from parent component
   props: {
     isGuest: {
       type: Boolean,
@@ -217,25 +227,31 @@ export default {
   
   data() {
     return {
-      history: [],
-      loading: false,
-      showClearModal: false,
-      showDeleteModal: false,
-      showSuccessModal: false,
-      successMessage: '',
-      itemToDelete: null
+      history: [],              // Array to store calculation history
+      loading: false,           // Loading state for API requests
+      showClearModal: false,    // Toggle for clear all confirmation modal
+      showDeleteModal: false,   // Toggle for delete item confirmation modal
+      showSuccessModal: false,  // Toggle for success message modal
+      successMessage: '',       // Dynamic success message text
+      itemToDelete: null        // Stores ID of item to be deleted
     }
   },
   
+  // Fetch history when component is mounted
   mounted() {
     this.fetchHistory()
   },
   
   methods: {
+    /**
+     * Fetches calculation history from backend
+     * Handles errors gracefully and ensures history is always an array
+     */
     async fetchHistory() {
       this.loading = true
       try {
         const res = await api.get('/history/')
+        // Safety check: Ensure response is array to prevent errors
         this.history = Array.isArray(res.data) ? res.data : []
       } catch (err) {
         console.error('Failed to load history:', err)
@@ -245,6 +261,10 @@ export default {
       }
     },
 
+    /**
+     * Formats operators to display mathematical symbols
+     * Example: '*' becomes '×', '/' becomes '÷'
+     */
     formatOperator(op) {
       const operators = {
         '*': '×',
@@ -255,6 +275,10 @@ export default {
       return operators[op] || op
     },
 
+    /**
+     * Formats numbers with proper locale formatting
+     * Adds thousand separators and limits decimal places
+     */
     formatNumber(value) {
       if (typeof value !== 'number') return value
       return new Intl.NumberFormat('en-US', {
@@ -262,6 +286,10 @@ export default {
       }).format(value)
     },
 
+    /**
+     * Copies result to clipboard using Clipboard API
+     * Shows success modal on successful copy
+     */
     async copyResult(result) {
       try {
         await navigator.clipboard.writeText(result.toString())
@@ -272,11 +300,20 @@ export default {
       }
     },
 
+    /**
+     * Shows confirmation modal before deleting an item
+     * Stores the item ID for later use
+     */
     confirmDelete(id) {
       this.itemToDelete = id
       this.showDeleteModal = true
     },
 
+    /**
+     * Deletes a single calculation item
+     * Handles network errors (offline mode) gracefully
+     * Updates UI optimistically for better UX
+     */
     async deleteItem() {
       if (this.isGuest) {
         alert('Login required to delete items.')
@@ -286,6 +323,7 @@ export default {
       try {
         await api.delete(`/history/${this.itemToDelete}/`)
         
+        // Remove item from local array
         this.history = this.history.filter(item => item.id !== this.itemToDelete)
         this.showDeleteModal = false
         this.itemToDelete = null
@@ -293,6 +331,7 @@ export default {
         this.successMessage = 'Calculation deleted successfully!'
         this.showSuccessModal = true
       } catch (err) {
+        // Handle offline scenarios where network request fails
         if (err.code === 'ERR_NETWORK' || err.message === 'Network Error') {
           this.history = this.history.filter(item => item.id !== this.itemToDelete)
           this.showDeleteModal = false
@@ -302,6 +341,7 @@ export default {
         } else {
           console.error('Delete failed:', err)
           this.showDeleteModal = false
+          // Show appropriate error based on status code
           if (err.response?.status === 401 || err.response?.status === 403) {
             alert('Login required to delete items.')
           } else {
@@ -311,6 +351,9 @@ export default {
       }
     },
 
+    /**
+     * Shows confirmation modal before clearing all history
+     */
     confirmClear() {
       if (this.isGuest) {
         alert('Login required to clear history.')
@@ -319,6 +362,10 @@ export default {
       this.showClearModal = true
     },
 
+    /**
+     * Clears all calculation history
+     * Similar error handling as deleteItem
+     */
     async clearAll() {
       if (this.isGuest) {
         alert('Login required to clear history.')
@@ -334,6 +381,7 @@ export default {
         this.successMessage = 'All history cleared successfully!'
         this.showSuccessModal = true
       } catch (err) {
+        // Handle network errors for offline functionality
         if (err.code === 'ERR_NETWORK' || err.message === 'Network Error') {
           this.history = []
           this.showClearModal = false
@@ -355,6 +403,7 @@ export default {
 </script>
 
 <style scoped>
+/* Main wrapper for history component */
 .history-wrapper {
   display: flex;
   flex-direction: column;
@@ -362,6 +411,7 @@ export default {
   height: 100%;
 }
 
+/* Header section with count and action buttons */
 .history-header {
   display: flex;
   align-items: center;
@@ -376,6 +426,7 @@ export default {
   gap: 0.5rem;
 }
 
+/* Large number display for total count */
 .count-number {
   font-size: 1.8rem;
   font-weight: 800;
@@ -394,6 +445,7 @@ export default {
   gap: 0.5rem;
 }
 
+/* Action button styling with hover effects */
 .action-button {
   width: 36px;
   height: 36px;
@@ -420,6 +472,7 @@ export default {
   cursor: not-allowed;
 }
 
+/* Danger styling for clear button */
 .action-button.clear {
   color: var(--danger);
 }
@@ -429,6 +482,7 @@ export default {
   border-color: rgba(239, 68, 68, 0.2);
 }
 
+/* Spinning animation for refresh button */
 .spinning {
   animation: spin 1s linear infinite;
 }
@@ -437,6 +491,7 @@ export default {
   to { transform: rotate(360deg); }
 }
 
+/* Loading state centered display */
 .loading-state {
   display: flex;
   flex-direction: column;
@@ -446,6 +501,7 @@ export default {
   color: var(--text-secondary);
 }
 
+/* Spinner with rotating animation */
 .loading-spinner {
   width: 40px;
   height: 40px;
@@ -456,6 +512,7 @@ export default {
   margin-bottom: 1rem;
 }
 
+/* Scrollable history list with custom scrollbar */
 .history-list {
   display: flex;
   flex-direction: column;
@@ -465,6 +522,7 @@ export default {
   padding-right: 0.5rem;
 }
 
+/* Custom scrollbar styling for better UX */
 .history-list::-webkit-scrollbar {
   width: 6px;
 }
@@ -483,6 +541,7 @@ export default {
   background: rgba(59, 130, 246, 0.3);
 }
 
+/* Individual history item with hover effects */
 .history-item {
   display: flex;
   align-items: center;
@@ -494,6 +553,7 @@ export default {
   transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
+/* Smooth slide-in effect on hover */
 .history-item:hover {
   background: white;
   border-color: rgba(59, 130, 246, 0.15);
@@ -509,6 +569,7 @@ export default {
   min-width: 0;
 }
 
+/* Icon container with gradient background */
 .item-icon {
   width: 36px;
   height: 36px;
@@ -529,6 +590,7 @@ export default {
   min-width: 0;
 }
 
+/* Expression display (operand operator operand) */
 .expression {
   display: flex;
   align-items: center;
@@ -547,6 +609,7 @@ export default {
   font-size: 0.9rem;
 }
 
+/* Result line with equal sign */
 .result-line {
   display: flex;
   align-items: center;
@@ -555,13 +618,14 @@ export default {
   font-size: 0.85rem;
 }
 
+/* Emphasized result display */
 .result {
   font-weight: 700;
   color: var(--primary);
   font-size: 1.1rem;
 }
 
-/*Note Display Styling */
+/* Note display with subtle background and border */
 .note-display {
   display: flex;
   align-items: flex-start;
@@ -586,6 +650,7 @@ export default {
   word-break: break-word;
 }
 
+/* Action buttons: Hidden by default, shown on hover */
 .item-actions {
   display: flex;
   gap: 0.5rem;
@@ -597,6 +662,7 @@ export default {
   opacity: 1;
 }
 
+/* Individual action button styling */
 .item-action-btn {
   width: 32px;
   height: 32px;
@@ -616,6 +682,7 @@ export default {
   color: var(--text-primary);
 }
 
+/* Delete button with danger styling */
 .item-action-btn.delete {
   color: var(--danger);
 }
@@ -625,6 +692,7 @@ export default {
   border-color: rgba(239, 68, 68, 0.2);
 }
 
+/* Empty state display when no history exists */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -660,6 +728,7 @@ export default {
   line-height: 1.6;
 }
 
+/* Modal overlay with backdrop blur */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -671,6 +740,7 @@ export default {
   z-index: 2000;
 }
 
+/* Modal content card */
 .modal-content {
   background: white;
   width: 90%;
@@ -680,6 +750,7 @@ export default {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }
 
+/* Icon containers for modal (warning/success) */
 .modal-icon {
   width: 64px;
   height: 64px;
@@ -714,11 +785,13 @@ export default {
   margin-bottom: 2rem;
 }
 
+/* Modal action buttons container */
 .modal-actions {
   display: flex;
   gap: 0.75rem;
 }
 
+/* Base modal button styling */
 .modal-btn {
   flex: 1;
   padding: 0.9rem;
@@ -733,6 +806,7 @@ export default {
   gap: 0.5rem;
 }
 
+/* Cancel button styling */
 .modal-btn.cancel {
   background: rgba(0, 0, 0, 0.04);
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -743,6 +817,7 @@ export default {
   background: rgba(0, 0, 0, 0.08);
 }
 
+/* Confirm button with danger gradient */
 .modal-btn.confirm {
   background: linear-gradient(135deg, var(--danger), #dc2626);
   border: none;
@@ -754,6 +829,7 @@ export default {
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
+/* Success button with success gradient */
 .modal-btn.success-btn {
   width: 100%;
   background: linear-gradient(135deg, #10b981, #059669);
@@ -766,6 +842,7 @@ export default {
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
+/* List transition animations for smooth item removal */
 .list-enter-active,
 .list-leave-active {
   transition: all 0.3s ease;
@@ -785,6 +862,7 @@ export default {
   transition: transform 0.3s ease;
 }
 
+/* Modal transition animations */
 .modal-enter-active,
 .modal-leave-active {
   transition: all 0.3s ease;
@@ -800,6 +878,7 @@ export default {
   transform: scale(0.9) translateY(20px);
 }
 
+/* Responsive design for mobile devices */
 @media (max-width: 640px) {
   .history-item {
     flex-direction: column;
@@ -807,6 +886,7 @@ export default {
     gap: 0.75rem;
   }
 
+  /* Keep actions visible on mobile */
   .item-actions {
     opacity: 1;
     align-self: flex-end;

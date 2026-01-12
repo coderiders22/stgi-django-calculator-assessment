@@ -4,28 +4,36 @@
     <Navbar />
     
     <!-- ================= HERO SECTION ================= -->
+    <!-- Main landing section with dynamic CTAs based on user auth state -->
     <section class="hero-section">
       <div class="hero-container">
         <div class="hero-content">
+          <!-- Top badge showing tech stack -->
           <div class="badge-wrapper">
             <div class="badge">
               <Sparkles :size="16" class="badge-icon" />
               <span>Django • Vue.js • STGI Assessment • Full-Stack Calculator • 2026</span>
             </div>
           </div>
+
+          <!-- Hero title with gradient effect -->
           <h1 class="hero-title">
             <span class="title-line">Professional. Powerful. Precise.</span>
             <span class="title-gradient">
               CalculatorPro<span class="dot">.</span>
             </span>
           </h1>
+
+          <!-- Description of main features -->
           <p class="hero-description">
             A feature-rich Django calculator with smart notes, weekly analytics, 
             dual access modes, and intelligent history management. Experience the 
             difference between guest and premium access.
           </p>
+
+          <!-- Dynamic action buttons based on authentication state -->
           <div class="hero-actions">
-            <!-- Logged in user -->
+            <!-- Case 1: User is already logged in with account -->
             <template v-if="isAuthenticated">
               <button 
                 class="btn btn-primary" 
@@ -36,7 +44,7 @@
               </button>
             </template>
 
-            <!-- Guest mode (already logged in as guest) -->
+            <!-- Case 2: User is in guest mode (temporary session) -->
             <template v-else-if="isGuest">
               <button 
                 class="btn btn-primary" 
@@ -45,6 +53,7 @@
                 <span>Resume as Guest</span>
                 <ArrowRight :size="20" />
               </button>
+              <!-- Clear guest mode and redirect to register -->
               <button 
                 class="btn btn-secondary" 
                 onclick="localStorage.removeItem('is_guest'); localStorage.removeItem('user'); sessionStorage.clear(); window.location.href='/register';"
@@ -53,8 +62,9 @@
               </button>
             </template>
 
-            <!-- Not logged in → Primary: Guest, Secondary: Login -->
+            <!-- Case 3: New visitor - show guest and login options -->
             <template v-else>
+              <!-- Primary CTA: Guest mode for quick access -->
               <button 
                 class="btn btn-primary" 
                 onclick="localStorage.setItem('is_guest', 'true'); localStorage.removeItem('user'); window.location.href='/dashboard';"
@@ -62,6 +72,7 @@
                 <span>Continue as Guest</span>
                 <ArrowRight :size="20" />
               </button>
+              <!-- Secondary CTA: Full registration -->
               <button 
                 class="btn btn-secondary" 
                 onclick="window.location.href='/register'"
@@ -70,6 +81,8 @@
               </button>
             </template>
           </div>
+
+          <!-- Trust indicators showing key features -->
           <div class="trust-indicators">
             <div class="trust-item">
               <CheckCircle2 :size="16" />
@@ -86,16 +99,19 @@
           </div>
         </div>
 
-        <!-- HERO VISUAL -->
+        <!-- HERO VISUAL - Interactive calculator preview -->
         <div class="hero-visual">
+          <!-- Main preview card showing live calculation -->
           <div class="visual-card">
             <div class="card-header">
               <div class="card-dots">
+                <!-- macOS-style window dots -->
                 <span></span><span></span><span></span>
               </div>
               <div class="card-title">Live Calculation</div>
             </div>
             <div class="card-content">
+              <!-- Sample calculation display -->
               <div class="calc-display">
                 <div class="calc-operation">125 × 4</div>
                 <div class="calc-result">500</div>
@@ -104,6 +120,7 @@
                   Monthly revenue calculation
                 </div>
               </div>
+              <!-- Recent calculations history preview -->
               <div class="calc-history">
                 <div class="history-item">
                   <span>10 + 5</span>
@@ -116,7 +133,8 @@
               </div>
             </div>
           </div>
-          <!-- FLOATING CARDS -->
+
+          <!-- FLOATING CARDS - Animated feature highlights -->
           <div class="float-card float-1">
             <TrendingUp :size="16" />
             <span>Weekly Stats</span>
@@ -133,7 +151,8 @@
       </div>
     </section>
 
-    <!-- ================= ACCESS COMPARISON ================= -->
+    <!-- ================= ACCESS COMPARISON SECTION ================= -->
+    <!-- Side-by-side comparison of Guest vs Premium features -->
     <section class="comparison-section" id="access">
       <div class="section-container">
         <div class="section-header">
@@ -147,7 +166,7 @@
         </div>
         
         <div class="comparison-grid">
-          <!-- GUEST MODE -->
+          <!-- GUEST MODE CARD -->
           <div class="access-card guest-card">
             <div class="access-header">
               <div class="access-icon guest-icon">
@@ -156,6 +175,7 @@
               <h3 class="access-title">Guest Mode</h3>
               <p class="access-subtitle">Try without registration</p>
             </div>
+            <!-- Guest mode feature list with limitations -->
             <div class="access-features">
               <div class="feature-item enabled">
                 <CheckCircle2 :size="18" />
@@ -173,6 +193,7 @@
                 <CheckCircle2 :size="18" />
                 <span>Weekly analytics dashboard</span>
               </div>
+              <!-- Disabled features shown with X icon -->
               <div class="feature-item disabled">
                 <XCircle :size="18" />
                 <span>Cannot clear full history</span>
@@ -191,7 +212,7 @@
             </button>
           </div>
 
-          <!-- PREMIUM MODE -->
+          <!-- PREMIUM MODE CARD -->
           <div class="access-card premium-card">
             <div class="premium-badge">Recommended</div>
             <div class="access-header">
@@ -201,6 +222,7 @@
               <h3 class="access-title">Premium Access</h3>
               <p class="access-subtitle">Full power unleashed</p>
             </div>
+            <!-- All features enabled for premium users -->
             <div class="access-features">
               <div class="feature-item enabled">
                 <CheckCircle2 :size="18" />
@@ -239,7 +261,8 @@
       </div>
     </section>
 
-    <!-- ================= FEATURES ================= -->
+    <!-- ================= FEATURES SECTION ================= -->
+    <!-- Detailed feature cards explaining core functionality -->
     <section class="features-section" id="features">
       <div class="section-container">
         <div class="section-header">
@@ -252,6 +275,7 @@
           </p>
         </div>
         <div class="features-grid">
+          <!-- Feature 1: Calculator -->
           <div class="feature-card">
             <div class="feature-icon" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">
               <Calculator :size="24" />
@@ -262,6 +286,7 @@
             </p>
           </div>
           
+          <!-- Feature 2: History Tracking -->
           <div class="feature-card">
             <div class="feature-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">
               <History :size="24" />
@@ -272,6 +297,7 @@
             </p>
           </div>
           
+          <!-- Feature 3: Notes -->
           <div class="feature-card">
             <div class="feature-icon" style="background:linear-gradient(135deg,#10b981,#059669)">
               <FileText :size="24" />
@@ -282,6 +308,7 @@
             </p>
           </div>
           
+          <!-- Feature 4: Analytics -->
           <div class="feature-card">
             <div class="feature-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">
               <TrendingUp :size="24" />
@@ -292,6 +319,7 @@
             </p>
           </div>
           
+          <!-- Feature 5: History Management -->
           <div class="feature-card">
             <div class="feature-icon" style="background:linear-gradient(135deg,#ec4899,#db2777)">
               <Trash2 :size="24" />
@@ -302,6 +330,7 @@
             </p>
           </div>
           
+          <!-- Feature 6: Security -->
           <div class="feature-card">
             <div class="feature-icon" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">
               <Shield :size="24" />
@@ -315,7 +344,8 @@
       </div>
     </section>
 
-    <!-- ================= STATS ================= -->
+    <!-- ================= STATS SECTION ================= -->
+    <!-- Quick stats showing key metrics -->
     <section class="stats-section">
       <div class="stats-grid">
         <div class="stat-card">
@@ -337,7 +367,8 @@
       </div>
     </section>
 
-    <!-- ================= CTA ================= -->
+    <!-- ================= CALL TO ACTION SECTION ================= -->
+    <!-- Final conversion section encouraging registration -->
     <section class="cta-section">
       <div class="cta-container">
         <div class="cta-icon">
@@ -370,6 +401,7 @@ import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 import api from '@/services/api'
 
+// Import all necessary icons from lucide-vue-next
 import {
   ArrowRight,
   CheckCircle2,
@@ -411,62 +443,76 @@ export default {
 
   data() {
     return {
-      // 🔥 instant state (no flicker)
+      // Store username from localStorage for instant UI state
+      // This prevents UI flicker before API call completes
       username: localStorage.getItem('username'),
-      authChecked: false
+      authChecked: false // Flag to track if auth verification is complete
     }
   },
 
   computed: {
+    // Check if user has a valid authenticated session
     isAuthenticated() {
       return !!this.username
     },
 
+    // Check if user is in guest mode (no account but using app)
     isGuest() {
       return !this.isAuthenticated && localStorage.getItem('is_guest') === 'true'
     }
   },
 
   mounted() {
+    // Verify authentication status with backend on component load
     this.syncAuth()
   },
 
   methods: {
+    // Sync authentication state with Django backend
     async syncAuth() {
       try {
+        // Call Django /auth/me/ endpoint to check session validity
         const res = await api.get('/auth/me/', { withCredentials: true })
 
         if (res.data.is_authenticated) {
+          // User has valid session - update local state
           this.username = res.data.username
           localStorage.setItem('username', res.data.username)
-          localStorage.removeItem('is_guest')
+          localStorage.removeItem('is_guest') // Clear guest flag if logged in
         } else {
+          // No valid session - clear auth data
           this.clearAuth()
         }
       } catch {
+        // API call failed - assume not authenticated
         this.clearAuth()
       } finally {
         this.authChecked = true
       }
     },
 
+    // Clear all authentication data from localStorage
     clearAuth() {
       this.username = null
       localStorage.removeItem('username')
     },
 
+    // Navigate to dashboard (for authenticated users)
     goDashboard() {
       this.$router.push('/dashboard')
     },
 
+    // Navigate to login page
     goLogin() {
       this.$router.push('/login')
     },
 
+    // Navigate to registration page
     goRegister() {
       this.$router.push('/register')
     },
 
+    // Set guest mode flag and redirect to dashboard
     continueAsGuest() {
       localStorage.setItem('is_guest', 'true')
       this.$router.push('/dashboard')
@@ -476,7 +522,7 @@ export default {
 </script>
 
 <style scoped>
-/* ================= GLOBAL ================= */
+/* ================= GLOBAL STYLES ================= */
 .welcome-page {
   min-height: 100vh;
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);
@@ -492,6 +538,7 @@ export default {
   align-items: center;
 }
 
+/* Subtle gradient background effect behind hero */
 .hero-section::before {
   content: '';
   position: absolute;
@@ -505,6 +552,7 @@ export default {
   z-index: 0;
 }
 
+/* Two-column layout for hero content */
 .hero-container {
   max-width: 1320px;
   margin: 0 auto;
@@ -527,6 +575,7 @@ export default {
   justify-content: flex-start;
 }
 
+/* Tech stack badge with subtle animation */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -545,6 +594,7 @@ export default {
   color: var(--primary);
 }
 
+/* Smooth floating animation for badge */
 @keyframes badge-float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-4px); }
@@ -556,6 +606,7 @@ export default {
   gap: 0.5rem;
 }
 
+/* Responsive font sizing using clamp */
 .title-line {
   font-size: clamp(2rem, 4vw, 3.2rem);
   font-weight: 700;
@@ -564,6 +615,7 @@ export default {
   letter-spacing: -0.02em;
 }
 
+/* Gradient text effect for main branding */
 .title-gradient {
   font-size: clamp(3rem, 6vw, 5rem);
   font-weight: 900;
@@ -592,6 +644,7 @@ export default {
   flex-wrap: wrap;
 }
 
+/* Base button styles with smooth transitions */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -606,6 +659,7 @@ export default {
   text-decoration: none;
 }
 
+/* Primary button with gradient and shadow */
 .btn-primary {
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: white;
@@ -617,6 +671,7 @@ export default {
   box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
 }
 
+/* Secondary button with border and subtle background */
 .btn-secondary {
   background: rgba(255, 255, 255, 0.9);
   color: var(--text-primary);
@@ -629,6 +684,7 @@ export default {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
+/* Larger CTA buttons for emphasis */
 .btn-primary-large {
   display: inline-flex;
   align-items: center;
@@ -670,6 +726,7 @@ export default {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
+/* Trust indicators showing key features */
 .trust-indicators {
   display: flex;
   gap: 2rem;
@@ -689,12 +746,13 @@ export default {
   color: var(--success);
 }
 
-/* ================= HERO VISUAL ================= */
+/* ================= HERO VISUAL (Right Side) ================= */
 .hero-visual {
   position: relative;
   height: 500px;
 }
 
+/* Main calculator preview card with glassmorphism effect */
 .visual-card {
   position: absolute;
   top: 50%;
@@ -711,6 +769,7 @@ export default {
   animation: float 6s ease-in-out infinite;
 }
 
+/* Gentle floating animation for preview card */
 @keyframes float {
   0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
   50% { transform: translate(-50%, -50%) translateY(-20px); }
@@ -724,6 +783,7 @@ export default {
   gap: 1rem;
 }
 
+/* macOS-style window control dots */
 .card-dots {
   display: flex;
   gap: 6px;
@@ -753,6 +813,7 @@ export default {
   padding: 2rem 1.5rem;
 }
 
+/* Calculator display area */
 .calc-display {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   padding: 1.5rem;
@@ -773,6 +834,7 @@ export default {
   margin-bottom: 0.8rem;
 }
 
+/* Note display with left border accent */
 .calc-note {
   font-size: 0.9rem;
   color: var(--accent);
@@ -810,7 +872,8 @@ export default {
   color: var(--text-primary);
 }
 
-/* ================= FLOATING CARDS ================= */
+/* ================= FLOATING FEATURE CARDS ================= */
+/* Small animated cards showcasing features */
 .float-card {
   position: absolute;
   display: flex;
@@ -831,6 +894,7 @@ export default {
   color: var(--primary);
 }
 
+/* Position and animate each floating card differently */
 .float-1 {
   top: 10%;
   right: -10%;
@@ -849,6 +913,7 @@ export default {
   animation: float-3 4.5s ease-in-out infinite 1s;
 }
 
+/* Individual floating animations with different timing */
 @keyframes float-1 {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-15px); }
@@ -864,7 +929,7 @@ export default {
   50% { transform: translateY(-12px); }
 }
 
-/* ================= ACCESS COMPARISON ================= */
+/* ================= ACCESS COMPARISON SECTION ================= */
 .comparison-section {
   padding: 100px 5vw;
   background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
@@ -880,6 +945,7 @@ export default {
   margin-bottom: 5rem;
 }
 
+/* Section badge for category identification */
 .section-badge {
   display: inline-block;
   padding: 8px 18px;
@@ -908,6 +974,7 @@ export default {
   margin: 0 auto;
 }
 
+/* Responsive grid for comparison cards */
 .comparison-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
@@ -916,6 +983,7 @@ export default {
   margin: 0 auto;
 }
 
+/* Base card styling for access modes */
 .access-card {
   position: relative;
   padding: 3rem 2.5rem;
@@ -930,6 +998,7 @@ export default {
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
 }
 
+/* Premium card with highlighted border and shadow */
 .premium-card {
   border: 2px solid var(--primary);
   box-shadow: 0 20px 60px rgba(59, 130, 246, 0.15);
@@ -940,6 +1009,7 @@ export default {
   box-shadow: 0 30px 70px rgba(59, 130, 246, 0.25);
 }
 
+/* "Recommended" badge for premium card */
 .premium-badge {
   position: absolute;
   top: -12px;
@@ -960,6 +1030,7 @@ export default {
   margin-bottom: 2.5rem;
 }
 
+/* Icon containers for each access type */
 .access-icon {
   width: 80px;
   height: 80px;
@@ -992,6 +1063,7 @@ export default {
   margin-bottom: 2rem;
 }
 
+/* Feature list inside access cards */
 .access-features {
   display: flex;
   flex-direction: column;
@@ -1006,6 +1078,7 @@ export default {
   font-size: 0.95rem;
 }
 
+/* Enabled features with green check */
 .feature-item.enabled {
   color: var(--text-primary);
 }
@@ -1016,6 +1089,7 @@ export default {
   margin-top: 2px;
 }
 
+/* Disabled features with gray X */
 .feature-item.disabled {
   color: var(--text-tertiary);
 }
@@ -1024,6 +1098,7 @@ export default {
   color: #cbd5e1;
 }
 
+/* CTA button for access cards */
 .btn-access {
   width: 100%;
   padding: 1rem 2rem;
@@ -1043,6 +1118,7 @@ export default {
   transform: translateY(-2px);
 }
 
+/* Premium button with gradient */
 .premium-btn {
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: white;
@@ -1055,18 +1131,20 @@ export default {
   box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
 }
 
-/* ================= FEATURES ================= */
+/* ================= FEATURES SECTION ================= */
 .features-section {
   padding: 100px 5vw;
   background: white;
 }
 
+/* Responsive grid for feature cards */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 2rem;
 }
 
+/* Individual feature card with hover effect */
 .feature-card {
   padding: 2.5rem;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
@@ -1081,6 +1159,7 @@ export default {
   border-color: rgba(59, 130, 246, 0.2);
 }
 
+/* Icon container for each feature */
 .feature-icon {
   width: 56px;
   height: 56px;
@@ -1105,7 +1184,8 @@ export default {
   color: var(--text-secondary);
 }
 
-/* ================= STATS ================= */
+/* ================= STATS SECTION ================= */
+/* Stats section with primary gradient background */
 .stats-section {
   padding: 80px 5vw;
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
@@ -1123,6 +1203,7 @@ export default {
   text-align: center;
 }
 
+/* Large stat numbers */
 .stat-number {
   font-size: 3.5rem;
   font-weight: 900;
@@ -1137,12 +1218,13 @@ export default {
   font-weight: 500;
 }
 
-/* ================= CTA ================= */
+/* ================= CALL TO ACTION SECTION ================= */
 .cta-section {
   padding: 100px 5vw;
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 }
 
+/* Centered CTA container with subtle background */
 .cta-container {
   max-width: 900px;
   margin: 0 auto;
@@ -1153,6 +1235,7 @@ export default {
   border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
+/* Animated icon for CTA */
 .cta-icon {
   width: 80px;
   height: 80px;
@@ -1166,6 +1249,7 @@ export default {
   animation: pulse 2s ease-in-out infinite;
 }
 
+/* Pulse animation for CTA icon */
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.05); }
@@ -1196,59 +1280,82 @@ export default {
   flex-wrap: wrap;
 }
 
-/* ================= RESPONSIVE ================= */
+/* ================= RESPONSIVE DESIGN ================= */
+/* Tablet and smaller screens */
 @media (max-width: 1024px) {
+  /* Stack hero into single column */
   .hero-container {
     grid-template-columns: 1fr;
     gap: 60px;
   }
+  
   .hero-visual {
     height: 400px;
   }
+  
+  /* Hide floating cards on smaller screens for cleaner layout */
   .float-card {
     display: none;
   }
+  
+  /* Single column for comparison cards */
   .comparison-grid {
     grid-template-columns: 1fr;
     max-width: 500px;
   }
 }
 
+/* Mobile devices */
 @media (max-width: 768px) {
   .hero-section {
     padding: 80px 5vw 60px;
   }
+  
   .hero-content {
     gap: 1.5rem;
   }
+  
+  /* Stack action buttons vertically */
   .hero-actions {
     flex-direction: column;
     width: 100%;
   }
+  
   .btn {
     width: 100%;
     justify-content: center;
   }
+  
+  /* Stack trust indicators vertically */
   .trust-indicators {
     flex-direction: column;
     gap: 0.8rem;
   }
+  
+  /* Single column for features */
   .features-grid {
     grid-template-columns: 1fr;
   }
+  
+  /* 2-column stats grid */
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
   }
+  
   .stat-number {
     font-size: 2.5rem;
   }
+  
   .cta-container {
     padding: 3rem 2rem;
   }
+  
+  /* Stack CTA buttons vertically */
   .cta-buttons {
     flex-direction: column;
   }
+  
   .btn-primary-large,
   .btn-secondary-large {
     width: 100%;
@@ -1256,16 +1363,21 @@ export default {
   }
 }
 
+/* Small mobile devices */
 @media (max-width: 480px) {
   .visual-card {
     max-width: 100%;
   }
+  
   .calc-result {
     font-size: 2rem;
   }
+  
+  /* Single column stats */
   .stats-grid {
     grid-template-columns: 1fr;
   }
+  
   .comparison-grid {
     grid-template-columns: 1fr;
   }

@@ -4,7 +4,16 @@ from .models import CalculationHistory
 
 @admin.register(CalculationHistory)
 class CalculationHistoryAdmin(admin.ModelAdmin):
-    # admin can SEE
+    """
+    Admin configuration for CalculationHistory model.
+
+    Purpose:
+    - Allow admin to VIEW calculation records
+    - Prevent manual tampering (no add/edit/delete)
+    - Useful for monitoring user & guest activity
+    """
+
+    # Fields visible in admin list view
     list_display = (
         "id",
         "user",
@@ -16,14 +25,16 @@ class CalculationHistoryAdmin(admin.ModelAdmin):
         "created_at",
     )
 
-    #  Filters & search (read-only safe)
+    # Filters to quickly narrow results
     list_filter = ("operator", "created_at")
+
+    # Search by username (logged-in users) or session key (guests)
     search_fields = ("user__username", "session_key")
 
-    #  Ordering
+    # Default ordering (latest first)
     ordering = ("-created_at",)
 
-    #  Make EVERYTHING read-only
+    # Make all fields read-only to avoid data manipulation
     readonly_fields = (
         "user",
         "session_key",
@@ -34,14 +45,14 @@ class CalculationHistoryAdmin(admin.ModelAdmin):
         "created_at",
     )
 
-    # Disable add
+    # Prevent adding records manually from admin
     def has_add_permission(self, request):
         return False
 
-    # Disable delete
+    # Prevent deleting records
     def has_delete_permission(self, request, obj=None):
         return False
 
-    # Disable edit
+    # Prevent editing records
     def has_change_permission(self, request, obj=None):
         return False

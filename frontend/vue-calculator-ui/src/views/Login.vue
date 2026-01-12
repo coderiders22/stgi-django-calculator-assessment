@@ -1,76 +1,82 @@
 <!-- src/views/Login.vue -->
 <template>
   <div class="auth-page">
+    <!-- Navbar at the top of the page -->
     <Navbar />
 
+    <!-- Main wrapper containing left branding and right form -->
     <div class="auth-wrapper">
-   <!-- Left Side - Branding -->
-<div class="auth-branding">
-  <div class="branding-content">
-    <div class="brand-badge">
-      <Shield :size="16" />
-      <span>Secure Login</span>
-    </div>
+      <!-- Left Side - Branding Section -->
+      <div class="auth-branding">
+        <div class="branding-content">
+          <!-- Security badge to build trust -->
+          <div class="brand-badge">
+            <Shield :size="16" />
+            <span>Secure Login</span>
+          </div>
 
-    <h2 class="branding-title">
-      Welcome back to<br>
-      <span class="gradient-text">CalculatorPro</span>
-    </h2>
+          <!-- Welcome heading with app name -->
+          <h2 class="branding-title">
+            Welcome back to<br>
+            <span class="gradient-text">CalculatorPro</span>
+          </h2>
 
-    <p class="branding-description">
-      Sign in to unlock premium features including unlimited calculations, 
-      smart notes, and complete history management.
-    </p>
+          <!-- Brief description of premium features -->
+          <p class="branding-description">
+            Sign in to unlock premium features including unlimited calculations, 
+            smart notes, and complete history management.
+          </p>
 
-    <div class="feature-list">
-      <div class="feature-item">
-        <div class="feature-icon">
-          <FileText :size="18" />
-        </div>
-        <div class="feature-text">
-          <strong>Unlimited Smart Notes</strong>
-          <span>Add context to all your calculations with notes</span>
+          <!-- List of key features to encourage login -->
+          <div class="feature-list">
+            <div class="feature-item">
+              <div class="feature-icon">
+                <FileText :size="18" />
+              </div>
+              <div class="feature-text">
+                <strong>Unlimited Smart Notes</strong>
+                <span>Add context to all your calculations with notes</span>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <div class="feature-icon">
+                <TrendingUp :size="18" />
+              </div>
+              <div class="feature-text">
+                <strong>Weekly Analytics</strong>
+                <span>Track your calculation patterns and productivity</span>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <div class="feature-icon">
+                <History :size="18" />
+              </div>
+              <div class="feature-text">
+                <strong>Complete History Control</strong>
+                <span>Delete individual items or clear entire history anytime</span>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <div class="feature-icon">
+                <Database :size="18" />
+              </div>
+              <div class="feature-text">
+                <strong>Secure Cloud Storage</strong>
+                <span>Your data is permanently saved and accessible anywhere</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="feature-item">
-        <div class="feature-icon">
-          <TrendingUp :size="18" />
-        </div>
-        <div class="feature-text">
-          <strong>Weekly Analytics</strong>
-          <span>Track your calculation patterns and productivity</span>
-        </div>
-      </div>
-
-      <div class="feature-item">
-        <div class="feature-icon">
-          <History :size="18" />
-        </div>
-        <div class="feature-text">
-          <strong>Complete History Control</strong>
-          <span>Delete individual items or clear entire history anytime</span>
-        </div>
-      </div>
-
-      <div class="feature-item">
-        <div class="feature-icon">
-          <Database :size="18" />
-        </div>
-        <div class="feature-text">
-          <strong>Secure Cloud Storage</strong>
-          <span>Your data is permanently saved and accessible anywhere</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-      <!-- Right Side - Login Form -->
+      <!-- Right Side - Login Form Section -->
       <div class="auth-form-section">
         <div class="auth-container">
           <div class="auth-card">
+            <!-- Card header with icon and title -->
             <div class="card-header">
               <div class="header-icon">
                 <LogIn :size="28" />
@@ -79,7 +85,9 @@
               <p class="header-subtitle">Enter your credentials to continue</p>
             </div>
 
+            <!-- Login form - prevents default submission to handle with JavaScript -->
             <form @submit.prevent="handleLogin" class="auth-form">
+              <!-- Username input field -->
               <div class="form-group">
                 <label for="username">
                   <User :size="16" />
@@ -96,12 +104,14 @@
                     :class="{ 'input-error': errors.username }"
                   />
                 </div>
+                <!-- Show error message if username validation fails -->
                 <span v-if="errors.username" class="error-text">
                   <AlertCircle :size="14" />
                   {{ errors.username }}
                 </span>
               </div>
 
+              <!-- Password input field with toggle visibility -->
               <div class="form-group">
                 <label for="password">
                   <Lock :size="16" />
@@ -117,6 +127,7 @@
                     required
                     :class="{ 'input-error': errors.password }"
                   />
+                  <!-- Toggle button to show/hide password -->
                   <button
                     type="button"
                     class="toggle-password"
@@ -128,24 +139,21 @@
                     <EyeOff v-else :size="18" />
                   </button>
                 </div>
+                <!-- Show error message if password validation fails -->
                 <span v-if="errors.password" class="error-text">
                   <AlertCircle :size="14" />
                   {{ errors.password }}
                 </span>
               </div>
 
-              <div class="form-footer">
-                <router-link to="/forgot-password" class="forgot-link">
-                  Forgot password?
-                </router-link>
-              </div>
-
+              <!-- Submit button with loading state -->
               <button
                 type="submit"
                 class="submit-btn"
                 :disabled="loading"
                 :class="{ 'loading': loading }"
               >
+                <!-- Show spinner when loading, otherwise show Sign In text -->
                 <span v-if="loading" class="btn-content">
                   <span class="spinner"></span>
                   <span>Signing in...</span>
@@ -157,14 +165,17 @@
               </button>
             </form>
 
+            <!-- Divider between login and guest option -->
             <div class="divider">
               <span>or</span>
             </div>
 
+            <!-- Guest login button for users without account -->
             <button class="guest-btn" @click="loginAsGuest">
               Continue as Guest
             </button>
 
+            <!-- Link to registration page -->
             <div class="footer-links">
               <p>
                 Don't have an account?
@@ -179,7 +190,7 @@
       </div>
     </div>
 
-    <!-- Message Modal (Success / Error) -->
+    <!-- Modal for showing success/error messages -->
     <Modal
       v-if="showModal"
       :text="modalMessage"
@@ -187,7 +198,7 @@
       @close="showModal = false"
     />
 
-    <!-- Full-screen Loading Overlay -->
+    <!-- Full-screen loading overlay during authentication -->
     <div v-if="isFullLoading" class="full-loading-overlay">
       <div class="loading-content">
         <div class="loading-spinner"></div>
@@ -195,12 +206,13 @@
       </div>
     </div>
 
-    <!-- Footer -->
+    <!-- Footer at the bottom -->
     <Footer />
   </div>
 </template>
 
 <script>
+// Import all icons from lucide-vue-next library
 import {
   Eye,
   EyeOff,
@@ -216,6 +228,7 @@ import {
   Database
 } from 'lucide-vue-next'
 
+// Import required components
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 import api from '@/services/api'
@@ -224,6 +237,7 @@ import Modal from '@/components/Modal.vue'
 export default {
   name: 'Login',
 
+  // Register all components used in this view
   components: {
     Navbar,
     Footer,
@@ -242,78 +256,95 @@ export default {
     Database
   },
 
+  // Component state - reactive data properties
   data() {
     return {
-      username: '',
-      password: '',
-      showPassword: false,
-      loading: false,
-      isFullLoading: false,
-      showModal: false,
-      modalMessage: '',
-      modalType: 'error',
-      errors: {}
+      username: '',              // Stores username input
+      password: '',              // Stores password input
+      showPassword: false,       // Controls password visibility toggle
+      loading: false,            // Button loading state
+      isFullLoading: false,      // Full screen loading overlay state
+      showModal: false,          // Controls modal visibility
+      modalMessage: '',          // Message to display in modal
+      modalType: 'error',        // Modal type: 'success' or 'error'
+      errors: {}                 // Stores validation errors
     }
   },
 
   methods: {
+    /**
+     * Handles login form submission
+     * Makes API call to authenticate user and redirects on success
+     */
     async handleLogin() {
+      // Set loading states to prevent multiple submissions
       this.loading = true
       this.isFullLoading = true
       this.errors = {}
 
       try {
+        // Send login request to backend with credentials
         await api.post(
           '/auth/login/',
           {
             username: this.username,
             password: this.password
           },
-          { withCredentials: true }
+          { withCredentials: true }  // Important: sends cookies with request
         )
 
-        // clear guest flag
+        // Remove guest flag since user is now authenticated
         localStorage.removeItem('is_guest')
 
-        // success UI
+        // Show success message to user
         this.modalMessage = 'Login successful!'
         this.modalType = 'success'
         this.showModal = true
 
-    
+        // Check if there's a redirect URL in query params (from auth guard)
+        // Otherwise default to dashboard
         const redirectTo = this.$route.query.redirect || '/dashboard'
 
+        // Brief delay to show success message before redirect
         setTimeout(() => {
           this.$router.push(redirectTo)
         }, 600)
 
       } catch (err) {
+        // Handle login errors - show error from backend or default message
         this.modalMessage =
           err.response?.data?.error || 'Invalid credentials'
         this.modalType = 'error'
         this.showModal = true
       } finally {
+        // Reset loading states regardless of success/failure
         this.loading = false
         this.isFullLoading = false
       }
     },
 
+    /**
+     * Handles guest login
+     * Sets guest flag in localStorage and redirects to dashboard
+     * No API call needed - guest mode works with local storage only
+     */
     loginAsGuest() {
-      // Guest mode (session-based)
+      // Mark user as guest in localStorage
       localStorage.setItem('is_guest', 'true')
 
-      // Ensure no auth leftovers
+      // Remove any existing user data to avoid conflicts
       localStorage.removeItem('user')
 
+      // Redirect to dashboard - guest mode has limited features
       this.$router.push('/dashboard')
     }
   }
 }
 </script>
 
-
 <style scoped>
-/* ================= GLOBAL ================= */
+/* ================= GLOBAL STYLES ================= */
+/* Main container for auth page with gradient background */
 .auth-page {
   min-height: 100vh;
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);
@@ -323,14 +354,15 @@ export default {
   overflow-x: hidden;
 }
 
+/* Two-column layout: branding on left, form on right */
 .auth-wrapper {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  min-height: calc(100vh - 70px);
+  min-height: calc(100vh - 70px);  /* Subtract navbar height */
   flex: 1;
 }
 
-/* Left Side - Branding */
+/* ================= LEFT SIDE - BRANDING ================= */
 .auth-branding {
   background: #f8f9fa;
   padding: 0 5vw;
@@ -351,6 +383,7 @@ export default {
   width: 100%;
 }
 
+/* Security badge styling */
 .brand-badge {
   display: inline-flex;
   align-items: center;
@@ -366,6 +399,7 @@ export default {
   letter-spacing: 0.5px;
 }
 
+/* Large welcome title */
 .branding-title {
   font-size: 3rem;
   font-weight: 900;
@@ -380,6 +414,7 @@ export default {
   color: #1e293b;
 }
 
+/* Description text below title */
 .branding-description {
   font-size: 1.15rem;
   color: #64748b;
@@ -387,18 +422,21 @@ export default {
   margin-bottom: 3rem;
 }
 
+/* Feature list container */
 .feature-list {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
+/* Individual feature item with icon and text */
 .feature-item {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
 }
 
+/* Icon container for each feature */
 .feature-icon {
   width: 40px;
   height: 40px;
@@ -411,6 +449,7 @@ export default {
   flex-shrink: 0;
 }
 
+/* Feature text styling */
 .feature-text {
   display: flex;
   flex-direction: column;
@@ -428,7 +467,7 @@ export default {
   color: #64748b;
 }
 
-/* Right Side - Form */
+/* ================= RIGHT SIDE - FORM ================= */
 .auth-form-section {
   background: white;
   display: flex;
@@ -442,6 +481,7 @@ export default {
   max-width: 480px;
 }
 
+/* Main card containing the form */
 .auth-card {
   background: white;
   border-radius: 24px;
@@ -450,11 +490,13 @@ export default {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
+/* Card header with icon and title */
 .card-header {
   text-align: center;
   margin-bottom: 2.5rem;
 }
 
+/* Gradient icon at top of card */
 .header-icon {
   width: 60px;
   height: 60px;
@@ -480,19 +522,21 @@ export default {
   font-size: 1rem;
 }
 
-/* Form Styles */
+/* ================= FORM STYLES ================= */
 .auth-form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
+/* Each form input group */
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 }
 
+/* Label with icon */
 label {
   display: flex;
   align-items: center;
@@ -510,6 +554,7 @@ label svg {
   position: relative;
 }
 
+/* Text input styling */
 input {
   width: 100%;
   padding: 1rem 1.25rem;
@@ -521,6 +566,7 @@ input {
   transition: all 0.3s ease;
 }
 
+/* Input focus state with blue border and shadow */
 input:focus {
   outline: none;
   background: white;
@@ -532,11 +578,13 @@ input::placeholder {
   color: var(--text-muted);
 }
 
+/* Red border for inputs with errors */
 .input-error {
   border-color: var(--danger) !important;
   background: rgba(239, 68, 68, 0.02) !important;
 }
 
+/* Error message styling */
 .error-text {
   display: flex;
   align-items: center;
@@ -546,10 +594,12 @@ input::placeholder {
   font-weight: 500;
 }
 
+/* Password field with toggle button */
 .password-wrapper {
   position: relative;
 }
 
+/* Eye icon button to show/hide password */
 .toggle-password {
   position: absolute;
   right: 1rem;
@@ -589,6 +639,7 @@ input::placeholder {
   text-decoration: underline;
 }
 
+/* Primary submit button with gradient */
 .submit-btn {
   width: 100%;
   padding: 1.15rem;
@@ -604,16 +655,19 @@ input::placeholder {
   box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
 }
 
+/* Lift effect on hover */
 .submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
 }
 
+/* Disabled state when loading */
 .submit-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
+/* Button content with icon */
 .btn-content {
   display: flex;
   align-items: center;
@@ -621,6 +675,7 @@ input::placeholder {
   gap: 0.6rem;
 }
 
+/* Loading spinner animation */
 .spinner {
   display: inline-block;
   width: 18px;
@@ -635,6 +690,7 @@ input::placeholder {
   to { transform: rotate(360deg); }
 }
 
+/* Divider between login and guest option */
 .divider {
   position: relative;
   text-align: center;
@@ -669,6 +725,7 @@ input::placeholder {
   font-size: 0.95rem;
 }
 
+/* Link to registration page */
 .signup-link {
   color: var(--primary);
   font-weight: 600;
@@ -685,7 +742,8 @@ input::placeholder {
   gap: 0.5rem;
 }
 
-/* Guest Button */
+/* ================= GUEST BUTTON ================= */
+/* Dashed border button for guest access */
 .guest-btn {
   width: 100%;
   padding: 1.05rem;
@@ -706,7 +764,8 @@ input::placeholder {
   transform: translateY(-2px);
 }
 
-/* Full Screen Loading Overlay */
+/* ================= LOADING OVERLAY ================= */
+/* Full-screen overlay during authentication */
 .full-loading-overlay {
   position: fixed;
   inset: 0;
@@ -723,6 +782,7 @@ input::placeholder {
   color: white;
 }
 
+/* Large spinner for loading state */
 .loading-spinner {
   width: 64px;
   height: 64px;
@@ -739,7 +799,8 @@ input::placeholder {
   letter-spacing: 0.5px;
 }
 
-/* Responsive */
+/* ================= RESPONSIVE DESIGN ================= */
+/* Tablets and smaller - hide branding, show only form */
 @media (max-width: 1024px) {
   .auth-wrapper {
     grid-template-columns: 1fr;
@@ -752,6 +813,7 @@ input::placeholder {
   }
 }
 
+/* Mobile devices - reduce padding and font sizes */
 @media (max-width: 480px) {
   .auth-form-section {
     padding: 40px 20px;

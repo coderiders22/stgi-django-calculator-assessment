@@ -1,6 +1,5 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 
@@ -13,6 +12,12 @@ from .authentication import CsrfExemptSessionAuthentication
 # CALCULATE
 # =========================
 class CalculateView(APIView):
+    """
+    Handles calculator logic.
+    - Guests: limited to 10 calculations
+    - Logged-in users: unlimited
+    """
+
     permission_classes = [AllowAny]
     authentication_classes = [CsrfExemptSessionAuthentication]
 
@@ -31,6 +36,7 @@ class CalculateView(APIView):
         if op == "/" and b == 0:
             return Response({"error": "Division by zero"}, status=400)
 
+        # Perform calculation safely
         result = eval(f"{a}{op}{b}")
 
         data = {
@@ -49,7 +55,10 @@ class CalculateView(APIView):
 
             data["session_key"] = request.session.session_key
 
-            if CalculationHistory.objects.filter(session_key=request.session.session_key).count() >= 10:
+            # Guest calculation limit
+            if CalculationHistory.objects.filter(
+                session_key=request.session.session_key
+            ).count() >= 10:
                 return Response(
                     {"error": "Guest calculation limit reached"},
                     status=403
@@ -63,6 +72,12 @@ class CalculateView(APIView):
 # HISTORY
 # =========================
 class HistoryView(APIView):
+    """
+    Fetches calculation history for:
+    - Logged-in user
+    - Guest session
+    """
+
     permission_classes = [AllowAny]
 
     def get(self, request):
@@ -71,9 +86,14 @@ class HistoryView(APIView):
         else:
             if not request.session.session_key:
                 return Response([])
-            history = CalculationHistory.objects.filter(session_key=request.session.session_key)
+            history = CalculationHistory.objects.filter(
+                session_key=request.session.session_key
+            )
 
-        serializer = CalculationHistorySerializer(history.order_by("-created_at"), many=True)
+        serializer = CalculationHistorySerializer(
+            history.order_by("-created_at"),
+            many=True
+        )
         return Response(serializer.data)
 
 
@@ -84,16 +104,23 @@ class HistoryView(APIView):
 @permission_classes([IsAuthenticated])
 @authentication_classes([CsrfExemptSessionAuthentication])
 def clear_history(request):
+    """
+    Clears all calculation history for logged-in user.
+    Guests are not allowed.
+    """
     CalculationHistory.objects.filter(user=request.user).delete()
     return Response({"detail": "History cleared"})
 
 
 # =========================
-# DELETE ITEM
+# DELETE SINGLE ITEM
 # =========================
 @api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
 @authentication_classes([CsrfExemptSessionAuthentication])
 def delete_history_item(request, pk):
+    """
+    Deletes a single calculation record for logged-in user.
+    """
     CalculationHistory.objects.filter(id=pk, user=request.user).delete()
     return Response({"detail": "Deleted"})

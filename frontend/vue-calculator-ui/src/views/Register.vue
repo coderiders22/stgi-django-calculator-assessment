@@ -4,9 +4,11 @@
     <Navbar />
 
     <div class="auth-wrapper">
-      <!-- Left Side - Branding -->
+      <!-- ================= LEFT SIDE - BRANDING ================= -->
+      <!-- Marketing content explaining benefits of registration -->
       <div class="auth-branding">
         <div class="branding-content">
+          <!-- Badge showing this is registration page -->
           <div class="brand-badge">
             <UserPlus :size="16" />
             <span>New Account</span>
@@ -21,6 +23,7 @@
             calculations, smart notes, and complete history management.
           </p>
 
+          <!-- List of features user gets after registration -->
           <div class="feature-list">
             <div class="feature-item">
               <div class="feature-icon">
@@ -65,10 +68,11 @@
         </div>
       </div>
 
-      <!-- Right Side - Register Form -->
+      <!-- ================= RIGHT SIDE - REGISTRATION FORM ================= -->
       <div class="auth-form-section">
         <div class="auth-container">
           <div class="auth-card">
+            <!-- Card header with icon and title -->
             <div class="card-header">
               <div class="header-icon">
                 <UserPlus :size="28" />
@@ -79,7 +83,9 @@
               </p>
             </div>
 
+            <!-- Registration form with validation -->
             <form @submit.prevent="register" class="auth-form">
+              <!-- Username input field -->
               <div class="form-group">
                 <label for="username">
                   <User :size="16" />
@@ -96,12 +102,14 @@
                     :class="{ 'input-error': errors.username }"
                   />
                 </div>
+                <!-- Show username error if exists -->
                 <span v-if="errors.username" class="error-text">
                   <AlertCircle :size="14" />
                   {{ errors.username }}
                 </span>
               </div>
 
+              <!-- Password input field with toggle visibility -->
               <div class="form-group">
                 <label for="password">
                   <Lock :size="16" />
@@ -117,6 +125,7 @@
                     required
                     :class="{ 'input-error': errors.password }"
                   />
+                  <!-- Toggle button to show/hide password -->
                   <button
                     type="button"
                     class="toggle-password"
@@ -128,20 +137,24 @@
                     <EyeOff v-else :size="18" />
                   </button>
                 </div>
+                <!-- Show password error if exists -->
                 <span v-if="errors.password" class="error-text">
                   <AlertCircle :size="14" />
                   {{ errors.password }}
                 </span>
               </div>
 
-              <!-- Password Strength -->
+              <!-- Password Strength Indicator -->
+              <!-- Only shows when user starts typing password -->
               <div class="password-strength" v-if="password">
                 <div class="strength-label">
                   <span>Password strength</span>
+                  <!-- Dynamic strength text (Weak/Fair/Good/Strong) -->
                   <span class="strength-text" :class="passwordStrengthClass">
                     {{ passwordStrengthText }}
                   </span>
                 </div>
+                <!-- Visual strength bar that fills based on password quality -->
                 <div class="strength-bar">
                   <div
                     class="strength-fill"
@@ -151,16 +164,19 @@
                 </div>
               </div>
 
+              <!-- Submit button with loading state -->
               <button
                 type="submit"
                 class="submit-btn"
                 :disabled="loading"
                 :class="{ 'loading': loading }"
               >
+                <!-- Show spinner when submitting -->
                 <span v-if="loading" class="btn-content">
                   <span class="spinner"></span>
                   <span>Creating account...</span>
                 </span>
+                <!-- Normal state -->
                 <span v-else class="btn-content">
                   <span>Create Premium Account</span>
                   <ArrowRight :size="18" />
@@ -168,7 +184,8 @@
               </button>
             </form>
 
-            <!-- Guest Mode Hint -->
+            <!-- Guest Mode Option -->
+            <!-- Allows users to skip registration and try as guest -->
             <div class="guest-hint">
               <p>
                 Just want to try? 
@@ -182,6 +199,7 @@
               <span>or</span>
             </div>
 
+            <!-- Link to login page for existing users -->
             <div class="footer-links">
               <p>
                 Already have an account?
@@ -196,7 +214,7 @@
       </div>
     </div>
 
-    <!-- Message Modal (Success / Error) -->
+    <!-- Message Modal for success/error notifications -->
     <Modal
       v-if="showMessage"
       :text="message"
@@ -204,7 +222,7 @@
       @close="showMessage = false"
     />
 
-    <!-- Full-screen Loading Overlay -->
+    <!-- Full-screen Loading Overlay during registration -->
     <div v-if="isFullLoading" class="full-loading-overlay">
       <div class="loading-content">
         <div class="loading-spinner"></div>
@@ -212,12 +230,12 @@
       </div>
     </div>
 
-    <!-- Footer -->
     <Footer />
   </div>
 </template>
 
 <script>
+// Import all necessary icons
 import {
   Eye,
   EyeOff,
@@ -261,53 +279,68 @@ export default {
 
   data() {
     return {
-      username: '',
-      password: '',
-      showPassword: false,
-      loading: false,
-      isFullLoading: false,
-      showMessage: false,
-      message: '',
-      messageType: 'error',
-      errors: {}
+      username: '',              // User's chosen username
+      password: '',              // User's chosen password
+      showPassword: false,       // Toggle for password visibility
+      loading: false,            // Button loading state
+      isFullLoading: false,      // Full-screen loading overlay
+      showMessage: false,        // Show/hide modal
+      message: '',               // Modal message text
+      messageType: 'error',      // Modal type (success/error)
+      errors: {}                 // Form validation errors from backend
     }
   },
 
   computed: {
+    // Calculate password strength based on multiple criteria
     passwordStrength() {
       if (!this.password) return 0
 
       let strength = 0
+      // Check length (8+ chars = 1 point, 12+ chars = 2 points)
       if (this.password.length >= 8) strength++
       if (this.password.length >= 12) strength++
+      // Check for lowercase letters
       if (/[a-z]/.test(this.password)) strength++
+      // Check for uppercase letters
       if (/[A-Z]/.test(this.password)) strength++
+      // Check for numbers
       if (/[0-9]/.test(this.password)) strength++
+      // Check for special characters
       if (/[^a-zA-Z0-9]/.test(this.password)) strength++
 
+      // Cap at 4 (Strong)
       return Math.min(strength, 4)
     },
+
+    // CSS class for strength indicator color
     passwordStrengthClass() {
       const classes = ['weak', 'fair', 'good', 'strong']
       return classes[this.passwordStrength - 1] || 'weak'
     },
+
+    // Text label for strength
     passwordStrengthText() {
       const texts = ['Weak', 'Fair', 'Good', 'Strong']
       return texts[this.passwordStrength - 1] || 'Weak'
     },
+
+    // Width percentage for strength bar
     passwordStrengthWidth() {
       return `${(this.passwordStrength / 4) * 100}%`
     }
   },
 
   methods: {
+    // Handle user registration
     async register() {
+      // Clear previous errors
       this.errors = {}
       this.loading = true
       this.isFullLoading = true
 
       try {
-        // 1️⃣ Register user
+        // Step 1: Register new user with Django backend
         await api.post(
           '/auth/register/',
           {
@@ -315,11 +348,12 @@ export default {
             password: this.password
           },
           {
-            withCredentials: true
+            withCredentials: true  // Include cookies for session
           }
         )
 
-        // 2️⃣ Auto-login via Django session
+        // Step 2: Auto-login the newly registered user
+        // This creates a Django session immediately after registration
         await api.post(
           '/auth/login/',
           {
@@ -331,38 +365,46 @@ export default {
           }
         )
 
-        // Remove guest flag
+        // Remove guest flag since user now has an account
         localStorage.removeItem('is_guest')
 
-        // UX feedback
+        // Show success message
         this.message =
           'Premium account created successfully! Redirecting to dashboard...'
         this.messageType = 'success'
         this.showMessage = true
 
+        // Redirect to dashboard after 1.2 seconds
         setTimeout(() => {
           this.$router.replace('/dashboard')
         }, 1200)
 
       } catch (err) {
+        // Handle registration errors
         const errorData = err.response?.data
 
+        // Check for different error types from Django
         if (errorData?.error) {
+          // Generic error message
           this.message = errorData.error
         } else if (errorData?.username) {
+          // Username validation error (e.g., already exists)
           this.errors.username = errorData.username[0]
         } else {
+          // Fallback error message
           this.message = 'Something went wrong. Please try again.'
         }
 
         this.messageType = 'error'
         this.showMessage = true
       } finally {
+        // Reset loading states
         this.loading = false
         this.isFullLoading = false
       }
     },
 
+    // Allow user to skip registration and use guest mode
     continueAsGuest() {
       localStorage.setItem('is_guest', 'true')
       this.$router.replace('/dashboard')
@@ -373,7 +415,7 @@ export default {
 
 
 <style scoped>
-/* ================= GLOBAL ================= */
+/* ================= GLOBAL STYLES ================= */
 .auth-page {
   min-height: 100vh;
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);
@@ -383,6 +425,7 @@ export default {
   overflow-x: hidden;
 }
 
+/* Two-column layout for auth page */
 .auth-wrapper {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -390,7 +433,7 @@ export default {
   flex: 1;
 }
 
-/* Left Side - Branding */
+/* ================= LEFT SIDE - BRANDING ================= */
 .auth-branding {
   background: #f8f9fa;
   padding: 80px 5vw;
@@ -410,6 +453,7 @@ export default {
   margin: 0 auto;
 }
 
+/* Badge at top of branding section */
 .brand-badge {
   display: inline-flex;
   align-items: center;
@@ -446,6 +490,7 @@ export default {
   margin-bottom: 3rem;
 }
 
+/* Feature list on left side */
 .feature-list {
   display: flex;
   flex-direction: column;
@@ -458,6 +503,7 @@ export default {
   gap: 1rem;
 }
 
+/* Icon containers for features */
 .feature-icon {
   width: 40px;
   height: 40px;
@@ -487,7 +533,7 @@ export default {
   color: #64748b;
 }
 
-/* Right Side - Form */
+/* ================= RIGHT SIDE - FORM ================= */
 .auth-form-section {
   background: white;
   display: flex;
@@ -501,6 +547,7 @@ export default {
   max-width: 480px;
 }
 
+/* Main registration card */
 .auth-card {
   background: white;
   border-radius: 24px;
@@ -514,6 +561,7 @@ export default {
   margin-bottom: 2.5rem;
 }
 
+/* Icon at top of form */
 .header-icon {
   width: 60px;
   height: 60px;
@@ -540,7 +588,7 @@ export default {
   font-size: 1rem;
 }
 
-/* Form Styles */
+/* ================= FORM STYLES ================= */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -553,6 +601,7 @@ export default {
   gap: 0.6rem;
 }
 
+/* Form labels with icons */
 label {
   display: flex;
   align-items: center;
@@ -570,6 +619,7 @@ label svg {
   position: relative;
 }
 
+/* Input field styling */
 input {
   width: 100%;
   padding: 1rem 1.25rem;
@@ -581,6 +631,7 @@ input {
   transition: all 0.3s ease;
 }
 
+/* Input focus state */
 input:focus {
   outline: none;
   background: white;
@@ -592,11 +643,13 @@ input::placeholder {
   color: var(--text-muted);
 }
 
+/* Error state for inputs */
 .input-error {
   border-color: var(--danger) !important;
   background: rgba(239, 68, 68, 0.02) !important;
 }
 
+/* Error message text */
 .error-text {
   display: flex;
   align-items: center;
@@ -606,10 +659,12 @@ input::placeholder {
   font-weight: 500;
 }
 
+/* Password field with toggle button */
 .password-wrapper {
   position: relative;
 }
 
+/* Show/hide password toggle button */
 .toggle-password {
   position: absolute;
   right: 1rem;
@@ -630,7 +685,7 @@ input::placeholder {
   color: var(--text-primary);
 }
 
-/* Password Strength */
+/* ================= PASSWORD STRENGTH INDICATOR ================= */
 .password-strength {
   margin-top: -0.5rem;
 }
@@ -648,6 +703,7 @@ input::placeholder {
   font-weight: 500;
 }
 
+/* Strength text with dynamic colors */
 .strength-text {
   font-weight: 600;
 }
@@ -657,6 +713,7 @@ input::placeholder {
 .strength-text.good { color: #3b82f6; }
 .strength-text.strong { color: #10b981; }
 
+/* Strength bar container */
 .strength-bar {
   height: 6px;
   background: rgba(0, 0, 0, 0.06);
@@ -664,6 +721,7 @@ input::placeholder {
   overflow: hidden;
 }
 
+/* Strength bar fill (dynamically sized and colored) */
 .strength-fill {
   height: 100%;
   border-radius: 10px;
@@ -675,6 +733,7 @@ input::placeholder {
 .strength-fill.good { background: #3b82f6; }
 .strength-fill.strong { background: #10b981; }
 
+/* ================= SUBMIT BUTTON ================= */
 .submit-btn {
   width: 100%;
   padding: 1.15rem;
@@ -707,6 +766,7 @@ input::placeholder {
   gap: 0.6rem;
 }
 
+/* Loading spinner for submit button */
 .spinner {
   display: inline-block;
   width: 18px;
@@ -721,7 +781,7 @@ input::placeholder {
   to { transform: rotate(360deg); }
 }
 
-/* Guest Hint */
+/* ================= GUEST HINT ================= */
 .guest-hint {
   text-align: center;
   margin: 1.5rem 0;
@@ -733,6 +793,7 @@ input::placeholder {
   margin: 0;
 }
 
+/* Guest mode link button */
 .guest-link {
   background: none;
   border: none;
@@ -747,6 +808,7 @@ input::placeholder {
   color: var(--primary-dark);
 }
 
+/* Divider between form sections */
 .divider {
   position: relative;
   text-align: center;
@@ -772,6 +834,7 @@ input::placeholder {
   font-weight: 500;
 }
 
+/* ================= FOOTER LINKS ================= */
 .footer-links {
   text-align: center;
 }
@@ -781,6 +844,7 @@ input::placeholder {
   font-size: 0.95rem;
 }
 
+/* Login link styling */
 .login-link {
   color: var(--primary);
   font-weight: 600;
@@ -797,7 +861,8 @@ input::placeholder {
   gap: 0.5rem;
 }
 
-/* Full Screen Loading Overlay */
+/* ================= FULL SCREEN LOADING OVERLAY ================= */
+/* Shown during account creation process */
 .full-loading-overlay {
   position: fixed;
   inset: 0;
@@ -814,6 +879,7 @@ input::placeholder {
   color: white;
 }
 
+/* Large spinner for full-screen loading */
 .loading-spinner {
   width: 64px;
   height: 64px;
@@ -830,29 +896,38 @@ input::placeholder {
   letter-spacing: 0.5px;
 }
 
-/* Responsive */
+/* ================= RESPONSIVE DESIGN ================= */
+/* Tablet and smaller */
 @media (max-width: 1024px) {
+  /* Stack to single column */
   .auth-wrapper {
     grid-template-columns: 1fr;
   }
+  
+  /* Hide branding section on smaller screens */
   .auth-branding {
     display: none;
   }
+  
   .auth-form-section {
     padding: 60px 30px;
   }
 }
 
+/* Mobile devices */
 @media (max-width: 480px) {
   .auth-form-section {
     padding: 40px 20px;
   }
+  
   .auth-card {
     padding: 2rem 1.5rem;
   }
+  
   .card-header h1 {
     font-size: 1.5rem;
   }
+  
   .header-icon {
     width: 50px;
     height: 50px;
