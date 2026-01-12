@@ -1,151 +1,112 @@
 from pathlib import Path
-from corsheaders.defaults import default_headers  # 🔥 Add this import
+import os
+import dj_database_url
+from corsheaders.defaults import default_headers
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'dev-secret-key'
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.onrender.com']
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".onrender.com",
+    ".koyeb.app",
+]
 
 # ===============================
-# INSTALLED APPS
+# APPS
 # ===============================
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
 
-    'rest_framework',
-    'corsheaders',
+    "rest_framework",
+    "corsheaders",
 
-    'calculator',
+    "calculator",
 ]
 
 # ===============================
 # MIDDLEWARE
 # ===============================
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # 🔥 Must be first
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
 ]
 
 # ===============================
-# CORS SETTINGS - COMPLETE FIX
+# CORS
 # ===============================
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:5173",
     "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
-# 🔥 CRITICAL: Allow cookie headers
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    'set-cookie',
-]
-
-CORS_EXPOSE_HEADERS = [
-    'Content-Type',
-    'X-CSRFToken',
-    'Set-Cookie',
-]
-
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-]
-
-# 🔥 Cache preflight requests
-CORS_PREFLIGHT_MAX_AGE = 86400
+CORS_ALLOW_HEADERS = list(default_headers) + ["set-cookie"]
 
 # ===============================
-# CSRF SETTINGS
+# CSRF
 # ===============================
-CSRF_COOKIE_NAME = "csrftoken"
-CSRF_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_DOMAIN = None
-
 CSRF_TRUSTED_ORIGINS = [
-    "http://127.0.0.1:5173",
     "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
 # ===============================
-# SESSION SETTINGS
+# URLS & TEMPLATES
 # ===============================
-SESSION_ENGINE = "django.contrib.sessions.backends.db"
-SESSION_COOKIE_NAME = "sessionid"
-SESSION_COOKIE_AGE = 1209600
-SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_SECURE = False
-SESSION_COOKIE_DOMAIN = None
-SESSION_SAVE_EVERY_REQUEST = True
+ROOT_URLCONF = "config.urls"
 
-# ===============================
-# URL CONFIG
-# ===============================
-ROOT_URLCONF = 'config.urls'
-
-# ===============================
-# TEMPLATES
-# ===============================
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
+WSGI_APPLICATION = "config.wsgi.application"
+
 # ===============================
-# DATABASE
+# DATABASE (RENDER POSTGRES)
 # ===============================
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'calculator_db',
-        'USER': 'calculator_user',
-        'PASSWORD': 'calculator123',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    "default": dj_database_url.config(
+        default=os.getenv(
+            "DATABASE_URL",
+            "postgresql://calculatorpro_user:SZRcI3oV1nkYqNNEiOQsE1xwRKZdIUGs@dpg-d5i5242dbo4c73ec7ar0-a.singapore-postgres.render.com:5432/calculatorpro",
+        ),
+        conn_max_age=600,
+        ssl_require=True,
+    )
 }
 
 # ===============================
 # STATIC FILES
 # ===============================
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    ...
-]
-
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
