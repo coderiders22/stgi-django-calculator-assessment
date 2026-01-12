@@ -1,18 +1,17 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
-import Navbar from '@/components/Navbar.vue'
-import { initCSRF } from '@/services/api'
-import { auth } from '@/stores/auth'
+<!-- src/App.vue -->
+<template>
+  <div id="app">
+    <Navbar />
+    <router-view />
+  </div>
+</template>
 
-async function bootstrap() {
-  await initCSRF()
-  await auth.init()  
+<script>
+import Navbar from './components/Navbar.vue'   // ← path check karo
 
-  const app = createApp(App)
-  app.use(router)
-  app.component('Navbar', Navbar)
-  app.mount('#app')
+export default {
+  components: {
+    Navbar
+  }
 }
-
-bootstrap()
+</script>

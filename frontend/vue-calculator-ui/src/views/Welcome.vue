@@ -368,8 +368,7 @@
 <script>
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
-
-import { auth } from '@/stores/auth'
+import api from '@/services/api'
 
 import {
   ArrowRight,
@@ -410,22 +409,52 @@ export default {
     Sparkles
   },
 
-  computed: {
-    /** 🔥 Global auth state */
-    auth() {
-      return auth
-    },
-
-    isAuthenticated() {
-      return auth.isAuthenticated
-    },
-
-    isGuest() {
-      return !auth.isAuthenticated && localStorage.getItem('is_guest') === 'true'
+  data() {
+    return {
+      // 🔥 instant state (no flicker)
+      username: localStorage.getItem('username'),
+      authChecked: false
     }
   },
 
+  computed: {
+    isAuthenticated() {
+      return !!this.username
+    },
+
+    isGuest() {
+      return !this.isAuthenticated && localStorage.getItem('is_guest') === 'true'
+    }
+  },
+
+  mounted() {
+    this.syncAuth()
+  },
+
   methods: {
+    async syncAuth() {
+      try {
+        const res = await api.get('/auth/me/', { withCredentials: true })
+
+        if (res.data.is_authenticated) {
+          this.username = res.data.username
+          localStorage.setItem('username', res.data.username)
+          localStorage.removeItem('is_guest')
+        } else {
+          this.clearAuth()
+        }
+      } catch {
+        this.clearAuth()
+      } finally {
+        this.authChecked = true
+      }
+    },
+
+    clearAuth() {
+      this.username = null
+      localStorage.removeItem('username')
+    },
+
     goDashboard() {
       this.$router.push('/dashboard')
     },

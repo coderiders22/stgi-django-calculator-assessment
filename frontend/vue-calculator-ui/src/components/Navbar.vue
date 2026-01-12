@@ -172,7 +172,6 @@
     </teleport>
   </nav>
 </template>
-
 <script>
 import {
   Calculator,
@@ -192,7 +191,6 @@ import {
 } from 'lucide-vue-next'
 
 import api from '@/services/api'
-import { auth } from '@/stores/auth'
 
 export default {
   name: 'NavbarComponent',
@@ -220,6 +218,10 @@ export default {
       mobileMenuOpen: false,
       userMenuOpen: false,
 
+      // 🔥 IMPORTANT
+      username: localStorage.getItem('username'),
+      authChecked: false,
+
       navLinks: [
         { label: 'Home', path: '/', icon: 'Home' },
         { label: 'Features', path: '/#features', icon: 'Zap', isHash: true },
@@ -229,21 +231,12 @@ export default {
   },
 
   computed: {
-    /** 🔥 Global auth state */
-    auth() {
-      return auth
-    },
-
-    username() {
-      return auth.username
-    },
-
     isAuthenticated() {
-      return auth.isAuthenticated
+      return !!this.username
     },
 
     isGuest() {
-      return !auth.isAuthenticated && localStorage.getItem('is_guest') === 'true'
+      return !this.isAuthenticated && localStorage.getItem('is_guest') === 'true'
     },
 
     isTransparent() {
@@ -252,16 +245,36 @@ export default {
   },
 
   mounted() {
-    window.addEventListener('scroll', this.onScroll)
-  },
+    window.addEventListener('scroll', () => {
+      this.isScrolled = window.scrollY > 20
+    })
 
-  beforeUnmount() {
-    window.removeEventListener('scroll', this.onScroll)
+    // 🔥 Sync with backend (no flicker)
+    this.syncAuth()
   },
 
   methods: {
-    onScroll() {
-      this.isScrolled = window.scrollY > 20
+    async syncAuth() {
+      try {
+        const res = await api.get('/auth/me/', { withCredentials: true })
+
+        if (res.data.is_authenticated) {
+          this.username = res.data.username
+          localStorage.setItem('username', res.data.username)
+          localStorage.removeItem('is_guest')
+        } else {
+          this.clearAuth()
+        }
+      } catch {
+        this.clearAuth()
+      } finally {
+        this.authChecked = true
+      }
+    },
+
+    clearAuth() {
+      this.username = null
+      localStorage.removeItem('username')
     },
 
     closeMenus() {
@@ -271,16 +284,15 @@ export default {
 
     async logout() {
       try {
-        await api.post('/auth/logout/')
-      } catch (err) {
-        // 403 is OK (CSRF/session expired)
-        console.warn('Logout warning:', err?.response?.status)
-      } finally {
-        auth.logoutLocal()
-        localStorage.removeItem('is_guest')
-        this.closeMenus()
-        this.$router.push('/login')
+        await api.post('/auth/logout/', {}, { withCredentials: true })
+      } catch (e) {
+        console.warn('Logout failed (safe to ignore)')
       }
+
+      this.clearAuth()
+      localStorage.removeItem('is_guest')
+      this.closeMenus()
+      this.$router.push('/login')
     },
 
     exitGuest() {
@@ -313,12 +325,11 @@ export default {
             block: 'start'
           })
         }
-
-        this.closeMenus()
       } else {
         this.$router.push(link.path)
-        this.closeMenus()
       }
+
+      this.closeMenus()
     }
   }
 }

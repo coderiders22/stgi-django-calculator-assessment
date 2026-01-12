@@ -1,13 +1,18 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import './assets/gradient.css'
+
 import Navbar from '@/components/Navbar.vue'
 import { initCSRF } from '@/services/api'
-import { auth } from '@/stores/auth'
+
 
 async function bootstrap() {
-  await initCSRF()
-  await auth.init()   // 🔥 WAIT for auth BEFORE mount
+  try {
+    await initCSRF()
+  } catch (e) {
+    console.warn('CSRF init error:', e)
+  }
 
   const app = createApp(App)
   app.use(router)
