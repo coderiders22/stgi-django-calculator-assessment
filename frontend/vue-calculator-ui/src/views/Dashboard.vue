@@ -187,31 +187,35 @@ export default {
       }
     },
     // Fetch calculation statistics
-    async refreshStats() {
-      try {
-        const res = await api.get('/history/', {
-          withCredentials: true
-        })
-        const history = res.data || []
-        
-        this.totalCalculations = history.length
-        
-        // Count this week's calculations (last 7 days)
-        const now = new Date()
-        const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000))
-        
-        this.weekCalculations = history.filter(item => {
-          if (!item.created_at) return false
-          const itemDate = new Date(item.created_at)
-          return itemDate >= sevenDaysAgo
-        }).length
-        
-      } catch (err) {
-        console.error('Failed to load stats:', err)
-        this.totalCalculations = 0
-        this.weekCalculations = 0
-      }
-    },
+   async refreshStats() {
+  try {
+    const res = await api.get('/history/', {
+      withCredentials: true
+    })
+
+    // 🔒 SAFETY CHECK (THIS FIXES THE ERROR)
+    const history = Array.isArray(res.data) ? res.data : []
+
+    this.totalCalculations = history.length
+
+    // Count this week's calculations (last 7 days)
+    const now = new Date()
+    const sevenDaysAgo = new Date(
+      now.getTime() - (7 * 24 * 60 * 60 * 1000)
+    )
+
+    this.weekCalculations = history.filter(item => {
+      if (!item.created_at) return false
+      const itemDate = new Date(item.created_at)
+      return itemDate >= sevenDaysAgo
+    }).length
+
+  } catch (err) {
+    console.error('Failed to load stats:', err)
+    this.totalCalculations = 0
+    this.weekCalculations = 0
+  }
+},
     // Called when a new calculation is made
     onCalculated() {
       this.totalCalculations++
