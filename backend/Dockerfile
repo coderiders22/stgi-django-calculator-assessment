@@ -1,26 +1,26 @@
 # Use official lightweight Python image
 FROM python:3.11-slim
 
-# Set working directory inside container
-WORKDIR /app
+# Set working directory to backend folder
+WORKDIR /app/backend
 
 # Prevent Python from writing .pyc files
 ENV PYTHONDONTWRITEBYTECODE=1
 
-# Ensure logs are shown immediately (no buffering)
+# Ensure logs are flushed immediately
 ENV PYTHONUNBUFFERED=1
 
-# Copy dependency file first (Docker layer caching optimization)
-COPY requirements.txt .
+# Copy backend requirements first (better Docker cache)
+COPY backend/requirements.txt .
 
-# Install Python dependencies
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy entire project into container
-COPY . .
+# Copy backend source code
+COPY backend/ .
 
-# Expose Django/Gunicorn port
-EXPOSE 8000
+# Expose port (Gunicorn will bind dynamically)
+EXPOSE 8080
 
-# Start application using custom startup script
+# Run startup script (migrations + collectstatic + gunicorn)
 CMD ["bash", "start.sh"]
