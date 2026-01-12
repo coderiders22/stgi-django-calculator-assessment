@@ -442,16 +442,30 @@ http://localhost:8000/admin/
 
 ```
 
-### Demo Admin Credentials
+### How to create Demo Admin Credentials
 ```
 
-Username: admin
-Password: hey@123
+Admin Access (Local Development)
+
+For local development, an admin user can be created using:
+python manage.py createsuperuser
+
+This is intended for development and testing purposes only.
+In production, admin access is restricted and not exposed to end users.
 
 ```
+# Then you have to set username and password for admin so as to access admin portal
+* Username:
+* Email address:
+* Password:
+* Password (again):
+
+* Session-based history storage
+* Session isolation:
 
 > Credentials are shared **only for assessment/demo purposes**.
 
+----
 ### Admin Capabilities
 
 - View and manage all registered users
