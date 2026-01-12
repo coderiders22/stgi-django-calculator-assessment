@@ -366,7 +366,7 @@ The project is organized into two main parts: a Django REST backend and a Vue.js
 
 ```
 ---
-```md
+
 ---
 
 ## Admin Portal (Django Admin)
@@ -407,10 +407,7 @@ This demonstrates:
 - Secure authentication handling
 - Production-ready Django setup
 - Ability to audit and control application data
-```
-
 ---
-
 ## Screenshots (Demo)
 
 | Screen | Preview |
