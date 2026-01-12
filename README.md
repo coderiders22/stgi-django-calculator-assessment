@@ -65,11 +65,23 @@ The application evolves from a simple calculator into a **production-grade, role
 
 ### Technologies Used
 
+## Backend
 * Django Models
 * Django Views
-* SQLite Database
+* PostgreSQL Database
+* Django 4.2
 * Django ORM
 
+## Frontend
+* Vue 3
+* Vite
+* Axios
+* Tailwind-style utility CSS
+
+## Deployment
+* Backend: Koyeb
+* Frontend: Vercel
+  
 ---
 
 ## Phase 2 – Authentication & REST API 
@@ -81,25 +93,48 @@ The application evolves from a simple calculator into a **production-grade, role
 * Session-based authentication
 * Secure CSRF handling
 
-### REST API (Django REST Framework)
 
-| Endpoint          | Method | Description                    |
-| ----------------- | ------ | ------------------------------ |
-| `/calculate/`     | POST   | Perform calculation            |
-| `/history/`       | GET    | Fetch calculation history      |
-| `/history/{id}/`  | DELETE | Delete calculation (auth only) |
-| `/history/clear/` | DELETE | Clear history (auth only)      |
-| `/auth/register/` | POST   | Register user                  |
-| `/auth/login/`    | POST   | Login                          |
-| `/auth/logout/`   | POST   | Logout                         |
-| `/auth/me/`       | GET    | Current user info              |
-| `/auth/csrf/`     | GET    | CSRF token                     |
 
-### Permissions
+## API Endpoints (Phase 2)
 
-* **Authenticated users:** Full access
-* **Guests:** Limited access (session-based)
+```md
+### Authentication APIs
 
+| Method | Endpoint            | Description               | Access |
+|--------|---------------------|---------------------------|--------|
+| GET    | /api/auth/csrf/     | Sets CSRF cookie          | Public |
+| POST   | /api/auth/register/ | Register new user         | Public |
+| POST   | /api/auth/login/    | Login user                | Public |
+| POST   | /api/auth/logout/   | Logout user            | Authenticated |
+| GET    | /api/auth/me/       | Get auth status           | Public |
+
+---
+
+### Calculator APIs
+
+| Method | Endpoint             | Description               |    Access     |
+|--------|----------------------|---------------------------|---------------|
+| POST   | /api/calculate/      | Perform a calculation     | Guest / Auth  |
+| GET    | /api/history/        | Fetch calculation history | Guest / Auth  |
+| DELETE | /api/history/clear/  | Clear all history         | Authenticated |
+| DELETE | /api/history/<id>/   | Delete single record      | Authenticated |
+
+---
+```
+
+
+### Guest Restrictions
+- Maximum 10 calculations per session
+- Notes allowed for only 2 calculations
+- Cannot clear or delete history
+
+### Authenticated User Privileges
+- Unlimited calculations
+- Unlimited notes
+- Full history access
+- Can delete individual records
+- Can clear entire history
+  
 ---
 
 ## Phase 3 – Guest Session Support 
@@ -147,35 +182,60 @@ The application evolves from a simple calculator into a **production-grade, role
 * API error responses
 * Graceful UI error messages
 
-> Unit tests can be added using `Django TestCase` (structure prepared).
+## Running Unit Tests
 
+Unit tests are written using Django’s built-in testing framework.
+
+### Test Coverage
+- Calculation model creation
+- Guest calculations
+- Authenticated user calculations
+- Fetching calculation history
+- Clearing and deleting history
+
+### Run Tests
+
+```bash
+cd backend
+python manage.py test
+
+```
 ---
-
 ## Access Modes
 
-### Guest Mode
 
-✔ Basic calculator
-✔ View last 10 calculations
-✔ Add notes to **2 calculations**
-✔ Weekly analytics
-✖ Cannot delete history
-✖ Cannot clear history
-✖ Session data not permanent
+### Guest Users
 
-### Premium (Authenticated) Mode
+**Capabilities**
 
-✔ Unlimited calculations
-✔ Complete history access
-✔ Unlimited notes
-✔ Weekly analytics
-✔ Delete individual history items
-✔ Clear entire history
-✔ Persistent database storage
+* ▸ Basic calculator access
+* ▸ View only the **last 10 calculations**
+* ▸ Notes allowed on **maximum 2 calculations**
+* ▸ Weekly usage analytics
+
+**Restrictions**
+
+* ▸ History deletion is **not permitted**
+* ▸ Full history reset is **not allowed**
+* ▸ Data is **session-based** and not permanently stored
 
 ---
 
-## 📝 Smart Notes System
+### Authenticated (Premium) Users
+
+**Capabilities**
+
+* ▸ Unlimited calculator usage
+* ▸ Full access to calculation history
+* ▸ Unlimited notes on calculations
+* ▸ Weekly usage analytics
+* ▸ Delete individual calculation records
+* ▸ Clear complete calculation history
+* ▸ **Persistent storage** backed by database
+
+---
+
+## Smart Notes System
 
 * Attach notes to calculations
 * Useful for:
