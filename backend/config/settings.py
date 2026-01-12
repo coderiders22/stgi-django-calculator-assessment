@@ -76,7 +76,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # =====================
-# DATABASE (KOYEB / POSTGRES)
+# DATABASE (POSTGRES)
 # =====================
 
 if "DATABASE_URL" in os.environ:
@@ -87,6 +87,19 @@ if "DATABASE_URL" in os.environ:
         )
     }
 
+# ===============================
+# DATABASE Local
+# ===============================
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'calculator_db',
+#         'USER': 'calculator_user',
+#         'PASSWORD': 'calculator123',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 
 # =====================
 # PASSWORD VALIDATION

@@ -192,9 +192,11 @@ import {
 } from 'lucide-vue-next'
 
 import api from '@/services/api'
+import { auth } from '@/stores/auth'
 
 export default {
   name: 'NavbarComponent',
+
   components: {
     Calculator,
     Home,
@@ -217,7 +219,7 @@ export default {
       isScrolled: false,
       mobileMenuOpen: false,
       userMenuOpen: false,
-      username: null,
+
       navLinks: [
         { label: 'Home', path: '/', icon: 'Home' },
         { label: 'Features', path: '/#features', icon: 'Zap', isHash: true },
@@ -227,36 +229,39 @@ export default {
   },
 
   computed: {
-    isGuest() {
-      return localStorage.getItem('is_guest') === 'true'
+    /** 🔥 Global auth state */
+    auth() {
+      return auth
     },
+
+    username() {
+      return auth.username
+    },
+
+    isAuthenticated() {
+      return auth.isAuthenticated
+    },
+
+    isGuest() {
+      return !auth.isAuthenticated && localStorage.getItem('is_guest') === 'true'
+    },
+
     isTransparent() {
       return this.$route.path === '/' && !this.isScrolled
     }
   },
 
-  async mounted() {
-    window.addEventListener('scroll', () => {
-      this.isScrolled = window.scrollY > 20
-    })
+  mounted() {
+    window.addEventListener('scroll', this.onScroll)
+  },
 
-    await this.fetchUser()
+  beforeUnmount() {
+    window.removeEventListener('scroll', this.onScroll)
   },
 
   methods: {
-    async fetchUser() {
-      try {
-        const res = await api.get('/auth/me/', { withCredentials: true })
-        
-        if (res.data.is_authenticated) {
-          this.username = res.data.username
-          localStorage.removeItem('is_guest')
-        } else {
-          this.username = null
-        }
-      } catch (error) {
-        this.username = null
-      }
+    onScroll() {
+      this.isScrolled = window.scrollY > 20
     },
 
     closeMenus() {
@@ -266,12 +271,13 @@ export default {
 
     async logout() {
       try {
-        await api.post('/auth/logout/', {}, { withCredentials: true })
-      } catch (error) {
-        console.error('Logout error:', error)
+        await api.post('/auth/logout/')
+      } catch (err) {
+        // 403 is OK (CSRF/session expired)
+        console.warn('Logout warning:', err?.response?.status)
       } finally {
-        localStorage.clear()
-        this.username = null
+        auth.logoutLocal()
+        localStorage.removeItem('is_guest')
         this.closeMenus()
         this.$router.push('/login')
       }
@@ -284,43 +290,35 @@ export default {
     },
 
     isActive(path) {
-      if (path.startsWith('/#')) {
-        return false
-      }
+      if (path.startsWith('/#')) return false
       return this.$route.path === path
     },
 
     handleNavClick(link) {
       if (link.isHash) {
         const sectionId = link.path.substring(2)
-        
+
         if (this.$route.path !== '/') {
           this.$router.push('/').then(() => {
             setTimeout(() => {
-              const section = document.getElementById(sectionId)
-              if (section) {
-                section.scrollIntoView({ behavior: 'smooth', block: 'start' })
-              }
+              document.getElementById(sectionId)?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+              })
             }, 100)
           })
         } else {
-          const section = document.getElementById(sectionId)
-          if (section) {
-            section.scrollIntoView({ behavior: 'smooth', block: 'start' })
-          }
+          document.getElementById(sectionId)?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          })
         }
-        
+
         this.closeMenus()
       } else {
         this.$router.push(link.path)
         this.closeMenus()
       }
-    }
-  },
-
-  watch: {
-    '$route'() {
-      this.fetchUser()
     }
   }
 }

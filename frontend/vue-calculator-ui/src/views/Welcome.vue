@@ -368,7 +368,8 @@
 <script>
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
-import api from '@/services/api'
+
+import { auth } from '@/stores/auth'
 
 import {
   ArrowRight,
@@ -389,6 +390,7 @@ import {
 
 export default {
   name: 'Welcome',
+
   components: {
     Navbar,
     Footer,
@@ -408,36 +410,22 @@ export default {
     Sparkles
   },
 
-  data() {
-    return {
-      isAuthenticated: false,
-    }
-  },
-
   computed: {
-    isGuest() {
-      return localStorage.getItem('is_guest') === 'true'
-    }
-  },
+    /** 🔥 Global auth state */
+    auth() {
+      return auth
+    },
 
-  async mounted() {
-    await this.checkAuth()
+    isAuthenticated() {
+      return auth.isAuthenticated
+    },
+
+    isGuest() {
+      return !auth.isAuthenticated && localStorage.getItem('is_guest') === 'true'
+    }
   },
 
   methods: {
-    async checkAuth() {
-      try {
-        const res = await api.get('/auth/me/', { withCredentials: true })
-        this.isAuthenticated = res.data.is_authenticated
-        
-        if (this.isAuthenticated) {
-          localStorage.removeItem('is_guest')
-        }
-      } catch (error) {
-        this.isAuthenticated = false
-      }
-    },
-
     goDashboard() {
       this.$router.push('/dashboard')
     },
@@ -452,7 +440,6 @@ export default {
 
     continueAsGuest() {
       localStorage.setItem('is_guest', 'true')
-      localStorage.removeItem('user')
       this.$router.push('/dashboard')
     }
   }
