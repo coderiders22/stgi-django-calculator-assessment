@@ -19,11 +19,12 @@ The application evolves from a simple calculator into a **production-grade, role
 
 ## 🔗 Deployment Details
 
-- **Live App (Integrated):** [https://basictaskmanager.vercel.app/](https://basictaskmanager.vercel.app/)
+- **Live App (Integrated):** [https://stgi-django-calculator-assessment.vercel.app/](https://stgi-django-calculator-assessment.vercel.app/)
 
 ## 🔗 Frontend and Backend Deployed Link
-- **Vercel (Frontend):** `https://basictaskmanager.vercel.app/` 
-- Render (Backend): `https://basic-task-manager-9f0x.onrender.com` 
+- **Vercel (Frontend):** `https://stgi-django-calculator-assessment.vercel.app/` 
+- **Koyeb (Backend API):** `https://stgi-calculatorpro.koyeb.app/` 
+- **Cloud Database::**     `PostgreSQL (Hosted on Render) ` 
 
 ---
 
