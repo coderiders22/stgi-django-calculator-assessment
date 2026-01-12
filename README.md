@@ -94,8 +94,10 @@ The application evolves from a simple calculator into a **production-grade, role
 * Secure CSRF handling
 
 
+
 ## API Endpoints (Phase 2)
 
+```md
 ### Authentication APIs
 
 | Method | Endpoint | Description | Access |
@@ -118,7 +120,7 @@ The application evolves from a simple calculator into a **production-grade, role
 | DELETE | /api/history/<id>/ | Delete single record | Authenticated |
 
 ---
-
+```
 
 
 ### Guest Restrictions
