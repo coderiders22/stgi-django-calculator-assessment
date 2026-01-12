@@ -26,8 +26,25 @@ The application evolves from a simple calculator into a **production-grade, role
 - **Koyeb (Backend API):** `https://stgi-calculatorpro.koyeb.app/` 
 - **Cloud Database::**     `PostgreSQL (Hosted on Render) ` 
 
----
+### Admin Panel Access (For Evaluation)
 
+The Django Admin panel is enabled for reviewer evaluation and verification of backend functionality.
+
+* **Admin URL:**
+  [https://stgi-calculatorpro.koyeb.app/admin/](https://stgi-calculatorpro.koyeb.app/admin/)
+
+* **Admin Credentials (Temporary):**
+
+  ```
+  Username: admin
+  Password: admin@123
+  ```
+
+> Note:
+> The admin interface is configured in **read-only mode** for calculation records to prevent accidental data modification.
+> These credentials are provided **only for assessment and review purposes** and can be rotated or disabled after evaluation.
+
+---
 ## Application Overview
 
 **CalculatorPro** allows users to perform mathematical operations while maintaining a detailed calculation history.
