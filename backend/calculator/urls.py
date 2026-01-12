@@ -1,38 +1,32 @@
 # calculator/urls.py
-
 from django.urls import path
+
+from .auth_views import (
+    CSRFView,
+    RegisterView,
+    LoginView,
+    LogoutView,
+    MeView,
+)
+
 from .views import (
     CalculateView,
     HistoryView,
     clear_history,
-    delete_history_item
+    delete_history_item,
 )
-from .auth_views import (
-    CSRFView,     
-    RegisterView,
-    LoginView,
-    LogoutView,
-    MeView
-)
+
 urlpatterns = [
-    # --------------------
-    # Calculator APIs
-    # --------------------
-    path("calculate/", CalculateView.as_view()),
+    # ================= AUTH =================
+    path("auth/csrf/", CSRFView.as_view(), name="csrf"),
+    path("auth/register/", RegisterView.as_view(), name="register"),
+    path("auth/login/", LoginView.as_view(), name="login"),
+    path("auth/logout/", LogoutView.as_view(), name="logout"),
+    path("auth/me/", MeView.as_view(), name="me"),
 
-    # History (user + guest)
-    path("history/", HistoryView.as_view()),
-    path("history/clear/", clear_history),
-
-    # Delete single history (logged-in user only)
-    path("history/<int:pk>/", delete_history_item),
-
-    # --------------------
-    # Auth APIs (SESSION BASED)
-    # --------------------
-    path("auth/register/", RegisterView.as_view()),
-    path("auth/login/", LoginView.as_view()),
-    path("auth/logout/", LogoutView.as_view()),
-    path("auth/me/", MeView.as_view()),  
-    path("auth/csrf/", CSRFView.as_view()),
+    # ================= CALCULATOR =================
+    path("calculate/", CalculateView.as_view(), name="calculate"),
+    path("history/", HistoryView.as_view(), name="history"),
+    path("history/clear/", clear_history, name="clear-history"),
+    path("history/<int:pk>/", delete_history_item, name="delete-history"),
 ]
