@@ -37,19 +37,16 @@ class RegisterView(APIView):
         if User.objects.filter(username=username).exists():
             return Response({"error": "User already exists"}, status=400)
 
-        user = User.objects.create_user(
-            username=username,
-            password=password
-        )
+        user = User.objects.create_user(username=username, password=password)
 
-        # ❌ TEMP REMOVE SESSION LOGIN
-        # login(request, user)
-        # request.session.save()
+    
+        login(request, user)
+        request.session.save()
 
         return Response({
-            "message": "User registered successfully",
+            "message": "Registered & logged in successfully",
             "username": user.username
-        }, status=201)
+        })
 
 
 # =========================
