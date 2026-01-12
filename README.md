@@ -374,13 +374,19 @@ The project is organized into two main parts: a Django REST backend and a Vue.js
 | Welcome Screen | ![Welcome](screenshots/welcome.png) |
 | Guest Mode Dashboard | ![Guest Dashboard](screenshots/guest-dashboard.png) |
 | Guest History (Limited) | ![Guest History](screenshots/guest-history.png) |
-| Guest Limit Reached | ![Guest Limit](screenshots/guest-limit.png) |
-| Authentication Screen | ![Login](screenshots/login.png) |
+| Guest Limit Reached     | ![Guest Limit](screenshots/guest-limit.png) |
+| Authentication Screen   | ![Login](screenshots/login.png) |
+| Authentication Screen   | ![Register](screenshots/login.png) |
+| Access Modes            | ![Guest vs Premium Access](screenshots/login.png) |
 | Premium User Dashboard | ![Premium Dashboard](screenshots/premium-dashboard.png) |
-| Premium History Management | ![Premium History](screenshots/premium-history.png) |
+| Delete Single History Item | ![Premium user deleting an individual calculation](screenshots/premium-dashboard.png)|
+| Clear Entire History | ![Premium user clearing all calculation history at once](screenshots/premium-dashboard.png)| |
+| Premium Unlimited History Management | ![Premium History](screenshots/premium-history.png) |
+| Add Notes | ![Adding notes to a calculation (Premium feature)](screenshots/notes.png) |
 | Calculation Notes | ![Notes](screenshots/notes.png) |
 | Weekly Analytics | ![Analytics](screenshots/analytics.png) |
 | Django Admin Panel | ![Admin](screenshots/admin.png) |
+| Django Admin Panel | ![Users List](screenshots/admin.png) |
 
 ---
 
