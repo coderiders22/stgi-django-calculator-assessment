@@ -26,7 +26,7 @@ The application evolves from a simple calculator into a **production-grade, role
 - **Koyeb (Backend API):** `https://stgi-calculatorpro.koyeb.app/` 
 - **Cloud Database::**     `PostgreSQL (Hosted on Render) ` 
 
-### Admin Panel Access (For Evaluation)
+## 🔗 Admin Panel Access (For Evaluation)
 
 The Django Admin panel is enabled for reviewer evaluation and verification of backend functionality.
 
