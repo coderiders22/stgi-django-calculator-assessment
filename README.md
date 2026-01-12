@@ -366,6 +366,50 @@ The project is organized into two main parts: a Django REST backend and a Vue.js
 
 ```
 ---
+```md
+---
+
+## Admin Portal (Django Admin)
+
+The project includes a fully functional **Django Admin Panel** for backend-level
+management and evaluation.
+
+### Admin URL
+```
+
+[http://localhost:8000/admin/](http://localhost:8000/admin/)
+
+```
+
+### Demo Admin Credentials
+```
+
+Username: admin
+Password: hey@123
+
+```
+
+> Credentials are shared **only for assessment/demo purposes**.
+
+### Admin Capabilities
+
+- View and manage all registered users
+- Inspect all calculation history (guest + authenticated)
+- Review operands, operators, results, timestamps
+- Delete or audit calculation records
+- Verify guest vs premium access behavior
+- Backend-level data validation
+
+### Why Admin Panel Matters
+
+This demonstrates:
+- Proper backend management practices
+- Secure authentication handling
+- Production-ready Django setup
+- Ability to audit and control application data
+```
+
+---
 
 ## Screenshots (Demo)
 
