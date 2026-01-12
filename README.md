@@ -182,8 +182,24 @@ The application evolves from a simple calculator into a **production-grade, role
 * API error responses
 * Graceful UI error messages
 
-> Unit tests can be added using `Django TestCase` (structure prepared).
+## Running Unit Tests
 
+Unit tests are written using Django’s built-in testing framework.
+
+### Test Coverage
+- Calculation model creation
+- Guest calculations
+- Authenticated user calculations
+- Fetching calculation history
+- Clearing and deleting history
+
+### Run Tests
+
+```bash
+cd backend
+python manage.py test
+
+```
 ---
 
 ## Access Modes
