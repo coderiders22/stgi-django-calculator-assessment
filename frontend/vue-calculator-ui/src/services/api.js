@@ -9,9 +9,6 @@ const api = axios.create({
   },
 });
 
-/**
- * 🔐 Fetch CSRF cookie once (Django requirement)
- */
 export const initCSRF = async () => {
   try {
     await api.get('/auth/csrf/', { withCredentials: true });
@@ -21,9 +18,7 @@ export const initCSRF = async () => {
   }
 };
 
-/**
- * 🔐 Attach CSRF token automatically
- */
+
 api.interceptors.request.use((config) => {
   const csrfToken = document.cookie
     .split('; ')
@@ -34,7 +29,7 @@ api.interceptors.request.use((config) => {
     config.headers['X-CSRFToken'] = csrfToken;
   }
 
-  // 🔥 Ensure credentials are always sent
+  
   config.withCredentials = true;
 
 
@@ -42,9 +37,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-/**
- * Response interceptor
- */
+
 api.interceptors.response.use(
   (response) => {
    

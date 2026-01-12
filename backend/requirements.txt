@@ -4,6 +4,6 @@ djangorestframework_simplejwt==5.5.1
 django-cors-headers==4.9.0
 psycopg2-binary==2.9.9
 dj-database-url==3.0.1
-gunicorn                # ← start.sh mein use ho raha hai
-whitenoise              # static files ke liye (optional but recommended)
-python-dotenv           # agar use kar rahe hogit
+gunicorn               
+whitenoise             
+python-dotenv           
