@@ -19,7 +19,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL,
+        target: "https://stgi-calculatorpro.koyeb.app",
         changeOrigin: true,  // Changed to true for production proxy
         secure: false,
         ws: true,
