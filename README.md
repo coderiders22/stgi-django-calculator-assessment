@@ -392,10 +392,10 @@ The project is organized into two main parts: a Django REST backend and a Vue.js
 
 ## Author
 
-**Manav Rai**
-Punjab Engineering College, Chandigarh
-Email: [manavrai454@gmail.com](mailto:manavrai454@gmail.com)
-GitHub: [https://github.com/coderiders22](https://github.com/coderiders22)
+**Developed by:** Manav Rai  
+**Institution:** Punjab Engineering College, Chandigarh  
+**Email:** [manavrai454@gmail.com](mailto:manavrai454@gmail.com)  
+**GitHub:** [github.com/manavrai454](https://github.com/coderiders22/)
 
 ---
 
