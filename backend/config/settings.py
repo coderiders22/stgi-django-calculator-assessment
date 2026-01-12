@@ -1,94 +1,136 @@
+
+
+
 from pathlib import Path
 import os
+from corsheaders.defaults import default_headers  # 🔥 Add this import
 import dj_database_url
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# =====================
-# CORE SETTINGS
-# =====================
+# CORE
+SECRET_KEY = os.environ.get("SECRET_KEY", )
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "unsafe-secret-key")
-DEBUG = os.environ.get("DEBUG", "False") == "True"
+DEBUG = True
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    ".koyeb.app",
-    ".onrender.com",
-]
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost, ']
 
-# =====================
-# APPLICATIONS
-# =====================
-
+# ===============================
+# INSTALLED APPS
+# ===============================
 INSTALLED_APPS = [
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
 
-    "rest_framework",
-    "corsheaders",
+    'rest_framework',
+    'corsheaders',
 
-    "calculator",
+    'calculator',
 ]
 
-# =====================
-# MIDDLEWARE (ORDER IMPORTANT)
-# =====================
-
+# ===============================
+# MIDDLEWARE
+# ===============================
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.security.SecurityMiddleware",
-
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
+    'corsheaders.middleware.CorsMiddleware',  # 🔥 Must be first
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
 ]
 
-# =====================
-# URLS / TEMPLATES
-# =====================
+# ===============================
+# CORS SETTINGS - COMPLETE FIX
+# ===============================
+CORS_ALLOW_CREDENTIALS = True
 
-ROOT_URLCONF = "config.urls"
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+    "https://stgi-django-calculator-assessment.vercel.app",
+]
 
+#  CRITICAL: Allow cookie headers
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'set-cookie',
+]
+
+CORS_EXPOSE_HEADERS = [
+    'Content-Type',
+    'X-CSRFToken',
+    'Set-Cookie',
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+# Cache preflight requests
+CORS_PREFLIGHT_MAX_AGE = 86400
+
+# ===============================
+# CSRF SETTINGS
+# ===============================
+CSRF_COOKIE_NAME = "csrftoken"
+CSRF_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_DOMAIN = None
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+    "https://stgi-django-calculator-assessment.vercel.app",
+]
+
+# ===============================
+# SESSION SETTINGS
+# ===============================
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+SESSION_COOKIE_NAME = "sessionid"
+SESSION_COOKIE_AGE = 1209600
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_DOMAIN = None
+SESSION_SAVE_EVERY_REQUEST = True
+
+# ===============================
+# URL CONFIG
+# ===============================
+ROOT_URLCONF = 'config.urls'
+
+# ===============================
+# TEMPLATES
+# ===============================
 TEMPLATES = [
     {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = "config.wsgi.application"
-
-# =====================
-# DATABASE (POSTGRES)
-# =====================
-
-if "DATABASE_URL" in os.environ:
-    DATABASES = {
-        "default": dj_database_url.config(
-            conn_max_age=600,
-            ssl_require=True,
-        )
-    }
-
 # ===============================
-# DATABASE Local
+# DATABASE
 # ===============================
 # DATABASES = {
 #     'default': {
@@ -101,104 +143,21 @@ if "DATABASE_URL" in os.environ:
 #     }
 # }
 
-# =====================
-# PASSWORD VALIDATION
-# =====================
+# DATABASE (SECURE)
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
-]
+if "DATABASE_URL" in os.environ:
+   
+    DATABASES = {
+        "default": dj_database_url.config(
+            conn_max_age=600,
+            ssl_require=True,
+        )
+    }
+    
 
-# =====================
-# LANGUAGE / TIMEZONE
-# =====================
-
-LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
-USE_I18N = True
-USE_TZ = True
-
-# =====================
+# ===============================
 # STATIC FILES
-# =====================
-
-STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# =====================
-# CORS SETTINGS (Vercel → Koyeb)
-# =====================
-
-CORS_ALLOW_CREDENTIALS = True
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://stgi-django-calculator-assessment.vercel.app",
-]
-
-CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
-
-# =====================
-# SESSION & CSRF (🔥 THIS FIXES 500 ERROR 🔥)
-# =====================
-
-SESSION_ENGINE = "django.contrib.sessions.backends.db"
-
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-
-SESSION_COOKIE_SAMESITE = "None"
-CSRF_COOKIE_SAMESITE = "None"
-
-SESSION_COOKIE_HTTPONLY = True
-CSRF_COOKIE_HTTPONLY = False  # frontend needs csrftoken
-
-SESSION_COOKIE_DOMAIN = os.environ.get("SESSION_COOKIE_DOMAIN")
-CSRF_COOKIE_DOMAIN = os.environ.get("CSRF_COOKIE_DOMAIN")
-
-# =====================
-# SECURITY (OPTIONAL BUT GOOD)
-# =====================
-
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SECURE_SSL_REDIRECT = False  # Koyeb handles HTTPS
-
 # ===============================
-# CORS
-# ===============================
-CORS_ALLOW_CREDENTIALS = True
+STATIC_URL = 'static/'
 
-CORS_ALLOWED_ORIGINS = [
-    "https://stgi-django-calculator-assessment.vercel.app",
-]
-
-# ===============================
-# CSRF
-# ===============================
-CSRF_TRUSTED_ORIGINS = [
-    "https://stgi-django-calculator-assessment.vercel.app",
-]
-
-CSRF_COOKIE_NAME = "csrftoken"
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = "None"
-
-SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_SAMESITE = "None"
-
-# ⚠️ VERY IMPORTANT
-CSRF_USE_SESSIONS = False
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
