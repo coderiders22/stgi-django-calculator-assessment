@@ -39,7 +39,7 @@ class RegisterView(APIView):
 
         user = User.objects.create_user(username=username, password=password)
 
-    
+        # 🔥 Force session save
         login(request, user)
         request.session.save()
 
