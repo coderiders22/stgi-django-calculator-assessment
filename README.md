@@ -381,7 +381,7 @@ The project is organized into two main parts: a Django REST backend and a Vue.js
 | Premium User Dashboard | ![Premium Dashboard](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/premium%20user.png) |
 | Delete Single History Item | ![Premium user deleting an individual calculation](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/delete%20single%20history.png)|
 | Clear Entire History | ![Premium user clearing all calculation history at once](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/clear%20all%20history.png)| 
-| Premium Unlimited History Management | ![Premium Unlimited History]() |
+| Premium Unlimited History Management | ![Premium Unlimited History](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/939dca14a05bb75676c150dd7f74dfdef593dbbe/Screenshots/Premium%20Unlimited%20History.png) |
 | Add Notes | ![Adding notes to a calculation (Premium feature)](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/add%20notes.png) |
 | Calculation Notes | ![Notes](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/calculation%20notes..png) |
 | Weekly Analytics | ![Analytics](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/analytics.png) |
