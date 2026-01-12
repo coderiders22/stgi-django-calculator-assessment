@@ -39,7 +39,7 @@ class RegisterView(APIView):
 
         user = User.objects.create_user(username=username, password=password)
 
-        # 🔥 Force session save
+    
         login(request, user)
         request.session.save()
 
@@ -71,10 +71,10 @@ class LoginView(APIView):
         if user is None:
             return Response({"error": "Invalid credentials"}, status=401)
 
-        # CRITICAL: Login and force session creation
+     
         login(request, user)
         
-        # Force session modification to save
+      
         request.session.modified = True
         request.session.save()
 
