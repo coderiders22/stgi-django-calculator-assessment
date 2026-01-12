@@ -371,22 +371,22 @@ The project is organized into two main parts: a Django REST backend and a Vue.js
 
 | Screen | Preview |
 |------|--------|
-| Welcome Screen | ![Welcome](screenshots/welcome.png) |
-| Guest Mode Dashboard | ![Guest Dashboard](screenshots/guest-dashboard.png) |
-| Guest History (Limited) | ![Guest History](screenshots/guest-history.png) |
-| Guest Limit Reached     | ![Guest Limit](screenshots/guest-limit.png) |
-| Authentication Screen   | ![Login](screenshots/login.png) |
-| Authentication Screen   | ![Register](screenshots/login.png) |
-| Access Modes            | ![Guest vs Premium Access](screenshots/login.png) |
-| Premium User Dashboard | ![Premium Dashboard](screenshots/premium-dashboard.png) |
-| Delete Single History Item | ![Premium user deleting an individual calculation](screenshots/premium-dashboard.png)|
-| Clear Entire History | ![Premium user clearing all calculation history at once](screenshots/premium-dashboard.png)| |
-| Premium Unlimited History Management | ![Premium History](screenshots/premium-history.png) |
-| Add Notes | ![Adding notes to a calculation (Premium feature)](screenshots/notes.png) |
-| Calculation Notes | ![Notes](screenshots/notes.png) |
-| Weekly Analytics | ![Analytics](screenshots/analytics.png) |
-| Django Admin Panel | ![Admin](screenshots/admin.png) |
-| Django Admin Panel | ![Users List](screenshots/admin.png) |
+| Welcome Screen | ![Welcome](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/welcome.png) |
+| Guest Mode Dashboard | ![Guest Dashboard](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/guest%20dashboard.png) |
+| Guest History (Limited) | ![Guest History Limit](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/guest%20history.png) |
+| Guest Limit Reached     | ![Guest Limit](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/guest%20limit.png) |
+| Authentication Screen   | ![Login](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/login.png) |
+| Authentication Screen   | ![Register](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/register.png) |
+| Access Modes            | ![Guest vs Premium Access](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/Guest%20vs%20Premium%20Access.png) |
+| Premium User Dashboard | ![Premium Dashboard](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/premium%20user.png) |
+| Delete Single History Item | ![Premium user deleting an individual calculation](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/delete%20single%20history.png)|
+| Clear Entire History | ![Premium user clearing all calculation history at once](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/clear%20all%20history.png)| 
+| Premium Unlimited History Management | ![Premium Unlimited History]() |
+| Add Notes | ![Adding notes to a calculation (Premium feature)](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/add%20notes.png) |
+| Calculation Notes | ![Notes](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/calculation%20notes..png) |
+| Weekly Analytics | ![Analytics](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/analytics.png) |
+| Django Admin Panel | ![Admin](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/admin%20portal.png) |
+| Django Admin Panel | ![Users List](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/users%20admin.png) |
 
 ---
 
