@@ -1,14 +1,11 @@
-# calculator/urls.py
 from django.urls import path
-
 from .auth_views import (
-    CSRFView,
     RegisterView,
     LoginView,
     LogoutView,
     MeView,
+    CSRFView,
 )
-
 from .views import (
     CalculateView,
     HistoryView,
@@ -17,16 +14,16 @@ from .views import (
 )
 
 urlpatterns = [
-    # ================= AUTH =================
-    path("auth/csrf/", CSRFView.as_view(), name="csrf"),
-    path("auth/register/", RegisterView.as_view(), name="register"),
-    path("auth/login/", LoginView.as_view(), name="login"),
-    path("auth/logout/", LogoutView.as_view(), name="logout"),
-    path("auth/me/", MeView.as_view(), name="me"),
+    # AUTH
+    path('auth/csrf/', CSRFView.as_view()),
+    path('auth/register/', RegisterView.as_view()),
+    path('auth/login/', LoginView.as_view()),
+    path('auth/logout/', LogoutView.as_view()),
+    path('auth/me/', MeView.as_view()),
 
-    # ================= CALCULATOR =================
-    path("calculate/", CalculateView.as_view(), name="calculate"),
-    path("history/", HistoryView.as_view(), name="history"),
-    path("history/clear/", clear_history, name="clear-history"),
-    path("history/<int:pk>/", delete_history_item, name="delete-history"),
+    # CALCULATOR
+    path('calculate/', CalculateView.as_view()),
+    path('history/', HistoryView.as_view()),
+    path('history/clear/', clear_history),
+    path('history/<int:pk>/', delete_history_item),
 ]
