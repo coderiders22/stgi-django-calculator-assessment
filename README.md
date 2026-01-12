@@ -43,7 +43,7 @@ The application evolves from a simple calculator into a **production-grade, role
 
 ---
 
-## 🧩 Project Phases & Implementation
+## Project Phases & Implementation
 
 ---
 
@@ -377,7 +377,7 @@ management and evaluation.
 ### Admin URL
 ```
 
-[http://localhost:8000/admin/](http://localhost:8000/admin/)
+http://localhost:8000/admin/
 
 ```
 
