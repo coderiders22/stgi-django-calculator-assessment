@@ -1,26 +1,22 @@
 FROM python:3.11-slim
 
-# Set working directory inside container
 WORKDIR /app
 
-# Environment settings
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Copy requirements first (Docker cache optimization)
-COPY backend/requirements.txt ./requirements.txt
+# Requirements are already at root (because workdir=backend)
+COPY requirements.txt .
 
-# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend source code
-COPY backend ./backend
+# Copy everything (config/, calculator/, manage.py, start.sh)
+COPY . .
 
-# Make start script executable
-RUN chmod +x backend/start.sh
+# Make sure start.sh is executable
+RUN chmod +x start.sh
 
-# Expose port used by Gunicorn (Koyeb uses 8080)
+# Koyeb uses 8080
 EXPOSE 8080
 
-# Run application
-CMD ["bash", "backend/start.sh"]
+CMD ["bash", "start.sh"]
