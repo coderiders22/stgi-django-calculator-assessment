@@ -100,24 +100,24 @@ The application evolves from a simple calculator into a **production-grade, role
 ```md
 ### Authentication APIs
 
-| Method | Endpoint | Description | Access |
-|------|---------|------------|--------|
-| GET | /api/auth/csrf/ | Sets CSRF cookie | Public |
-| POST | /api/auth/register/ | Register new user | Public |
-| POST | /api/auth/login/ | Login user | Public |
-| POST | /api/auth/logout/ | Logout user | Authenticated |
-| GET | /api/auth/me/ | Get auth status | Public |
+| Method | Endpoint            | Description               | Access |
+|--------|---------------------|---------------------------|--------|
+| GET    | /api/auth/csrf/     | Sets CSRF cookie          | Public |
+| POST   | /api/auth/register/ | Register new user         | Public |
+| POST   | /api/auth/login/    | Login user                | Public |
+| POST   | /api/auth/logout/   | Logout user            | Authenticated |
+| GET    | /api/auth/me/       | Get auth status           | Public |
 
 ---
 
 ### Calculator APIs
 
-| Method | Endpoint | Description | Access |
-|------|---------|------------|--------|
-| POST | /api/calculate/ | Perform a calculation | Guest / Auth |
-| GET | /api/history/ | Fetch calculation history | Guest / Auth |
-| DELETE | /api/history/clear/ | Clear all history | Authenticated |
-| DELETE | /api/history/<id>/ | Delete single record | Authenticated |
+| Method | Endpoint             | Description               |    Access     |
+|--------|----------------------|---------------------------|---------------|
+| POST   | /api/calculate/      | Perform a calculation     | Guest / Auth  |
+| GET    | /api/history/        | Fetch calculation history | Guest / Auth  |
+| DELETE | /api/history/clear/  | Clear all history         | Authenticated |
+| DELETE | /api/history/<id>/   | Delete single record      | Authenticated |
 
 ---
 ```
