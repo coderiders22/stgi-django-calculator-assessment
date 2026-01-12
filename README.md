@@ -201,32 +201,41 @@ python manage.py test
 
 ```
 ---
-
 ## Access Modes
 
 ### Guest Mode
 
-✔ Basic calculator
-✔ View last 10 calculations
-✔ Add notes to **2 calculations**
-✔ Weekly analytics
-✖ Cannot delete history
-✖ Cannot clear history
-✖ Session data not permanent
+**Available Features**
 
-### Premium (Authenticated) Mode
+* ✔ Basic calculator access
+* ✔ View last **10 calculations**
+* ✔ Add notes to **up to 2 calculations**
+* ✔ Weekly usage analytics
 
-✔ Unlimited calculations
-✔ Complete history access
-✔ Unlimited notes
-✔ Weekly analytics
-✔ Delete individual history items
-✔ Clear entire history
-✔ Persistent database storage
+**Restrictions**
+
+* ✖ Cannot delete calculation history
+* ✖ Cannot clear entire history
+* ✖ Session-based data (not permanently stored)
 
 ---
 
-## 📝 Smart Notes System
+### Premium (Authenticated) Mode
+
+**Available Features**
+
+* ✔ Unlimited calculations
+* ✔ Full calculation history access
+* ✔ Unlimited notes on calculations
+* ✔ Weekly usage analytics
+* ✔ Delete individual history records
+* ✔ Clear complete calculation history
+* ✔ Persistent database-backed storage
+
+---
+
+
+## Smart Notes System
 
 * Attach notes to calculations
 * Useful for:
