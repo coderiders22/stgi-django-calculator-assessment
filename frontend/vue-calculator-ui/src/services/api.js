@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api/',  
+  baseURL: 'https://stgi-calculatorpro.koyeb.app/api',  // ✅ FULL BACKEND URL
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -11,14 +11,14 @@ const api = axios.create({
 
 export const initCSRF = async () => {
   try {
-    await api.get('/auth/csrf/', { withCredentials: true });
-  
+    await api.get('/auth/csrf/');
+    console.log('CSRF token initialized');
   } catch (error) {
-  
+    console.error('CSRF initialization failed:', error);
   }
 };
 
-
+// Intercept requests to add CSRF token
 api.interceptors.request.use((config) => {
   const csrfToken = document.cookie
     .split('; ')
@@ -29,25 +29,18 @@ api.interceptors.request.use((config) => {
     config.headers['X-CSRFToken'] = csrfToken;
   }
 
-  
-  config.withCredentials = true;
-
-
-
   return config;
 });
 
-
+// Handle response errors
 api.interceptors.response.use(
   (response) => {
-   
     return response;
   },
   (error) => {
-  
+    console.error('API Error:', error.response?.status, error.response?.data);
     
     if (error.response?.status === 401) {
-    
       window.location.href = '/login?session_expired=true';
     }
     return Promise.reject(error);
