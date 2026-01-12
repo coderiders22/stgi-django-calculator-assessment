@@ -201,7 +201,7 @@ The application evolves from a simple calculator into a **production-grade, role
 | -------- | ------------------------------ |
 | Backend  | Django + Django REST Framework |
 | Frontend | Vue.js 3                       |
-| Database | SQLite                         |
+| Database | PostgreSQL                     |
 | Auth     | Django Session Authentication  |
 | API      | REST (JSON)                    |
 | UI Icons | Lucide Icons                   |
