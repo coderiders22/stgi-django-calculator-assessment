@@ -7,7 +7,7 @@ SECRET_KEY = 'dev-secret-key'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.onrender.com']
 
 # ===============================
 # INSTALLED APPS
@@ -138,6 +138,14 @@ DATABASES = {
 # ===============================
 # STATIC FILES
 # ===============================
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    ...
+]
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
