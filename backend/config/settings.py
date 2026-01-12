@@ -1,7 +1,6 @@
 from pathlib import Path
 import os
 import dj_database_url
-from corsheaders.defaults import default_headers
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -16,7 +15,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     ".koyeb.app",
     ".vercel.app",
-    "stgi-calculatorpro.koyeb.app",  # Your backend
+    "stgi-calculatorpro.koyeb.app",
 ]
 
 INSTALLED_APPS = [
@@ -34,7 +33,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",  # Must be first
+    "corsheaders.middleware.CorsMiddleware",  # Must be FIRST
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -46,21 +45,22 @@ MIDDLEWARE = [
 ]
 
 # ============================================
-# CORS Configuration - Frontend can access Backend
+# CORS Configuration
 # ============================================
 CORS_ALLOW_CREDENTIALS = True
 
+# ❌ WRONG (with trailing slash):
+# "https://stgi-django-calculator-assessment.vercel.app/"
+
+# ✅ CORRECT (no trailing slash):
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://stgi-django-calculator-assessment.vercel.app/",  # Your FRONTEND
+    "https://stgi-django-calculator-assessment.vercel.app",  # NO trailing slash!
 ]
 
-# Only for development
-if DEBUG:
-    CORS_ALLOW_ALL_ORIGINS = True
-else:
-    CORS_ALLOW_ALL_ORIGINS = False
+# For development - allows all origins
+CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 # ============================================
 # CSRF Configuration
@@ -68,22 +68,37 @@ else:
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://stgi-django-calculator-assessment.vercel.app/", 
-    "https://stgi-calculatorpro.koyeb.app",  
+    "https://stgi-django-calculator-assessment.vercel.app",  # NO trailing slash!
+    "https://stgi-calculatorpro.koyeb.app",
 ]
 
 # ============================================
-# Session & Cookie Configuration for Cross-Origin
+# Session & Cookie Configuration
 # ============================================
-SESSION_COOKIE_SECURE = not DEBUG  # True in production (HTTPS only)
-SESSION_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'  # Required for cross-origin
+SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'
 SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_DOMAIN = None  # Don't set domain for cross-origin
+SESSION_COOKIE_DOMAIN = None
 
-CSRF_COOKIE_SECURE = not DEBUG  # True in production
-CSRF_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'  # Required for cross-origin
-CSRF_COOKIE_HTTPONLY = False  # Must be False so JavaScript can read it
-CSRF_COOKIE_DOMAIN = None  # Don't set domain for cross-origin
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'
+CSRF_COOKIE_HTTPONLY = False  # JavaScript needs to read this
+CSRF_COOKIE_DOMAIN = None
+
+# ============================================
+# Additional CORS Headers (Add these!)
+# ============================================
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # ============================================
 # Database Configuration
@@ -92,7 +107,7 @@ DATABASES = {
     "default": dj_database_url.config(
         conn_max_age=600,
         ssl_require=not DEBUG,
-        default="sqlite:///db.sqlite3"  # Fallback for local
+        default="sqlite:///db.sqlite3"
     )
 }
 
@@ -110,7 +125,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ============================================
-# REST Framework Configuration
+# REST Framework
 # ============================================
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
