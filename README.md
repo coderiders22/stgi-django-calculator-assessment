@@ -65,11 +65,23 @@ The application evolves from a simple calculator into a **production-grade, role
 
 ### Technologies Used
 
+## Backend
 * Django Models
 * Django Views
-* SQLite Database
+* PostgreSQL Database
+* Django 4.2
 * Django ORM
 
+## Frontend
+* Vue 3
+* Vite
+* Axios
+* Tailwind-style utility CSS
+
+## Deployment
+* Backend: Koyeb
+* Frontend: Vercel
+  
 ---
 
 ## Phase 2 – Authentication & REST API 
@@ -81,19 +93,33 @@ The application evolves from a simple calculator into a **production-grade, role
 * Session-based authentication
 * Secure CSRF handling
 
-### REST API (Django REST Framework)
+```md
+## API Endpoints (Phase 2)
 
-| Endpoint          | Method | Description                    |
-| ----------------- | ------ | ------------------------------ |
-| `/calculate/`     | POST   | Perform calculation            |
-| `/history/`       | GET    | Fetch calculation history      |
-| `/history/{id}/`  | DELETE | Delete calculation (auth only) |
-| `/history/clear/` | DELETE | Clear history (auth only)      |
-| `/auth/register/` | POST   | Register user                  |
-| `/auth/login/`    | POST   | Login                          |
-| `/auth/logout/`   | POST   | Logout                         |
-| `/auth/me/`       | GET    | Current user info              |
-| `/auth/csrf/`     | GET    | CSRF token                     |
+### Authentication APIs
+
+| Method | Endpoint | Description | Access |
+|------|---------|------------|--------|
+| GET | /api/auth/csrf/ | Sets CSRF cookie | Public |
+| POST | /api/auth/register/ | Register new user | Public |
+| POST | /api/auth/login/ | Login user | Public |
+| POST | /api/auth/logout/ | Logout user | Authenticated |
+| GET | /api/auth/me/ | Get auth status | Public |
+
+---
+
+### Calculator APIs
+
+| Method | Endpoint | Description | Access |
+|------|---------|------------|--------|
+| POST | /api/calculate/ | Perform a calculation | Guest / Auth |
+| GET | /api/history/ | Fetch calculation history | Guest / Auth |
+| DELETE | /api/history/clear/ | Clear all history | Authenticated |
+| DELETE | /api/history/<id>/ | Delete single record | Authenticated |
+
+---
+```
+
 
 ### Permissions
 
