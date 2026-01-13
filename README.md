@@ -361,6 +361,29 @@ python manage.py test
 - For guest users, records are linked using Django session keys without creating user accounts.
 - Django’s built-in `auth` and `session` tables are used internally and are not duplicated.
 
+### Performance & Indexing Notes
+
+- `user` and `session_key` fields are frequently used for filtering calculation history and are indexed implicitly via Django ORM.
+- The schema is optimized for read-heavy operations such as history listing and admin review.
+- Pagination is handled at the API level to avoid large result sets.
+
+### Data Integrity Considerations
+
+- Each calculation record is associated with **either** a registered user **or** a guest session.
+- Guest calculations are isolated using Django's session framework without persisting temporary users.
+- Input validation and operator safety checks are enforced at the API layer before persisting data.
+
+### Design Decision: Single History Table
+
+A single `CalculationHistory` table is used for both guest and authenticated users instead of maintaining separate tables.
+
+**Benefits:**
+- Avoids schema duplication
+- Simplifies queries and admin views
+- Makes future user conversion (guest → registered) straightforward
+
+
+
 ---
 
 ## Security Considerations
