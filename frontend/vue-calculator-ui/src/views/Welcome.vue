@@ -377,10 +377,10 @@
     
     <p class="cta-description">
       <template v-if="isAuthenticated">
-        Continue building your professional calculation history right now!
+        You're all set! Head to your dashboard to continue.
       </template>
       <template v-else-if="isGuest">
-        You're in Guest mode — upgrade to Premium for unlimited features and permanent storage!
+     You're in Guest mode — upgrade to Premium for unlimited features and permanent storage!
       </template>
       <template v-else>
         Create a free account for unlimited calculations, smart notes, weekly analytics,
@@ -391,30 +391,47 @@
     <div class="cta-buttons">
       <!-- 1. Already Logged in -->
       <template v-if="isAuthenticated">
-        <button class="btn btn-primary-large" @click="goDashboard">
+        <button 
+          class="btn btn-primary-large"
+          onclick="window.location.href='/dashboard'"
+        >
           Go to Dashboard
           <ArrowRight :size="20" />
         </button>
       </template>
 
-      <!-- 2. In Guest Mode -->
+      <!-- 2. Guest Mode -->
       <template v-else-if="isGuest">
-        <button class="btn btn-primary-large" @click="goDashboard">
+        <button 
+          class="btn btn-primary-large"
+          onclick="window.location.href='/dashboard'"
+        >
           Continue in Dashboard
           <ArrowRight :size="20" />
         </button>
-        <button class="btn btn-secondary-large" @click="goRegister">
-          Upgrade to Premium
+        
+        <button 
+          class="btn btn-secondary-large"
+          onclick="localStorage.removeItem('is_guest'); localStorage.removeItem('user'); localStorage.removeItem('username'); sessionStorage.clear(); window.location.href='/register';"
+        >
+        Upgrade to Premium
         </button>
       </template>
 
-      <!-- 3. Not logged in, not guest (New visitor) -->
+      <!-- 3. New Visitor -->
       <template v-else>
-        <button class="btn btn-primary-large" @click="goRegister">
+        <button 
+          class="btn btn-primary-large"
+          onclick="window.location.href='/register'"
+        >
           Get Premium Access Free
           <ArrowRight :size="20" />
         </button>
-        <button class="btn btn-secondary-large" @click="continueAsGuest">
+        
+        <button 
+          class="btn btn-secondary-large"
+          onclick="localStorage.setItem('is_guest', 'true'); localStorage.removeItem('user'); window.location.href='/dashboard';"
+        >
           Try as Guest
         </button>
       </template>
