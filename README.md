@@ -514,8 +514,8 @@ This demonstrates:
 | Weekly Analytics | ![Analytics](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/analytics.png) |
 | Django Admin Panel | ![Admin](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/admin%20portal.png) |
 | Django Admin Panel | ![Users List](https://github.com/coderiders22/stgi-django-calculator-assessment/blob/30584f196411d2ebfc2792932bdad04dffb757d7/Screenshots/users%20admin.png) |
-| Responsive for all screens | ![Fully responsive and optimized across desktop, tablet, and mobile devices.]
-(https://github.com/coderiders22/stgi-django-calculator-assessment/blob/18fdaec359718c9ec334433b9c2efabc1a4a2ea2/Screenshots/IMG_0587.png) |
+| Responsive for all screens | ![Fully responsive and optimized across desktop, tablet, and mobile devices]
+(https://github.com/coderiders22/stgi-django-calculator assessment/blob/18fdaec359718c9ec334433b9c2efabc1a4a2ea2/Screenshots/IMG_0587.png) |
 
 ---
 
