@@ -100,8 +100,13 @@
         <div v-if="mobileMenuOpen" class="mobile-sidebar">
           
           <!-- Sidebar header with logo and close button -->
-          <div class="sidebar-header">
-            <span class="logo-text">CalculatorPro</span>
+     <div class="sidebar-header">
+  <div class="sidebar-logo-wrapper">
+    <div class="sidebar-logo-icon">
+      <Calculator :size="20" /> 
+    </div>
+    <span class="sidebar-logo-text">CalculatorPro</span>
+  </div>
             <button class="sidebar-close-btn" @click="mobileMenuOpen = false">
               <X />
             </button>
@@ -1046,5 +1051,32 @@ export default {
   .sidebar-actions {
     padding: 1rem;
   }
+}
+.sidebar-logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;  /* Icon aur text ke beech space */
+}
+
+.sidebar-logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 3px 10px rgba(59,130,246,0.2);
+  flex-shrink: 0;
+}
+
+.sidebar-logo-text {
+  font-size: 1.25rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;  /* Gradient text effect */
 }
 </style>
