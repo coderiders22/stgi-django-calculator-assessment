@@ -356,6 +356,11 @@ python manage.py test
 | result      | Float                 |
 | created_at  | DateTime              |
 
+### Notes
+- For authenticated users, records are linked via a foreign key to the User model.
+- For guest users, records are linked using Django session keys without creating user accounts.
+- Django’s built-in `auth` and `session` tables are used internally and are not duplicated.
+
 ---
 
 ## Security Considerations
