@@ -367,29 +367,61 @@
       </div>
     </section>
 
-    <!-- ================= CALL TO ACTION SECTION ================= -->
-    <!-- Final conversion section encouraging registration -->
-    <section class="cta-section">
-      <div class="cta-container">
-        <div class="cta-icon">
-          <Zap :size="48" />
-        </div>
-        <h2 class="cta-title">Ready to supercharge your calculations?</h2>
-        <p class="cta-description">
-          Create a free account for unlimited calculations, notes, weekly analytics, 
-          and complete history management. No credit card required.
-        </p>
-        <div class="cta-buttons">
-          <button class="btn btn-primary-large" @click="goRegister">
-            Get Premium Access Free
-            <ArrowRight :size="20" />
-          </button>
-          <button class="btn btn-secondary-large" @click="continueAsGuest">
-            Try as Guest
-          </button>
-        </div>
-      </div>
-    </section>
+   <!-- ================= CALL TO ACTION SECTION ================= -->
+<section class="cta-section">
+  <div class="cta-container">
+    <div class="cta-icon">
+      <Zap :size="48" />
+    </div>
+    <h2 class="cta-title">Ready to supercharge your calculations?</h2>
+
+    <!-- Description ko thoda dynamic kar sakte hain (optional but better UX) -->
+    <p class="cta-description">
+      <template v-if="isAuthenticated">
+        Continue building your professional calculation history in the dashboard!
+      </template>
+      <template v-else-if="isGuest">
+        You're already in Guest mode — upgrade to Premium to unlock unlimited features!
+      </template>
+      <template v-else>
+        Create a free account for unlimited calculations, notes, weekly analytics,
+        and complete history management. No credit card required.
+      </template>
+    </p>
+
+    <div class="cta-buttons">
+      <!-- Logged-in user -->
+      <template v-if="isAuthenticated">
+        <button class="btn btn-primary-large" @click="goDashboard">
+          Go to Dashboard
+          <ArrowRight :size="20" />
+        </button>
+      </template>
+
+      <!-- Guest mode user -->
+      <template v-else-if="isGuest">
+        <button class="btn btn-primary-large" @click="goDashboard">
+          Continue in Dashboard
+          <ArrowRight :size="20" />
+        </button>
+        <button class="btn btn-secondary-large" @click="goRegister">
+          Upgrade to Premium
+        </button>
+      </template>
+
+      <!-- Not logged in + not guest (new visitor) -->
+      <template v-else>
+        <button class="btn btn-primary-large" @click="goRegister">
+          Get Premium Access Free
+          <ArrowRight :size="20" />
+        </button>
+        <button class="btn btn-secondary-large" @click="continueAsGuest">
+          Try as Guest
+        </button>
+      </template>
+    </div>
+  </div>
+</section>
 
     <!-- ================= FOOTER ================= -->
     <Footer />
