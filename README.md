@@ -1,5 +1,5 @@
 # CalculatorPro – STGI Technical Assessment 2026 of Full-Stack Django Calculator Application
-**Deployment:** Live frontend and backend deployed
+`Deployment: Live frontend and backend deployed`
 
 
 **A professional, full-stack calculator application built with Django REST Framework and Vue.js**, designed to demonstrate authentication, session management, REST APIs, guest access, and admin control — as required in the Django assessment.
