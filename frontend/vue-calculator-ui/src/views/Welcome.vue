@@ -374,23 +374,22 @@
       <Zap :size="48" />
     </div>
     <h2 class="cta-title">Ready to supercharge your calculations?</h2>
-
-    <!-- Description ko thoda dynamic kar sakte hain (optional but better UX) -->
+    
     <p class="cta-description">
       <template v-if="isAuthenticated">
-        Continue building your professional calculation history in the dashboard!
+        Continue building your professional calculation history right now!
       </template>
       <template v-else-if="isGuest">
-        You're already in Guest mode — upgrade to Premium to unlock unlimited features!
+        You're in Guest mode — upgrade to Premium for unlimited features and permanent storage!
       </template>
       <template v-else>
-        Create a free account for unlimited calculations, notes, weekly analytics,
-        and complete history management. No credit card required.
+        Create a free account for unlimited calculations, smart notes, weekly analytics,
+        and full history management. No credit card required.
       </template>
     </p>
 
     <div class="cta-buttons">
-      <!-- Logged-in user -->
+      <!-- 1. Already Logged in -->
       <template v-if="isAuthenticated">
         <button class="btn btn-primary-large" @click="goDashboard">
           Go to Dashboard
@@ -398,7 +397,7 @@
         </button>
       </template>
 
-      <!-- Guest mode user -->
+      <!-- 2. In Guest Mode -->
       <template v-else-if="isGuest">
         <button class="btn btn-primary-large" @click="goDashboard">
           Continue in Dashboard
@@ -409,7 +408,7 @@
         </button>
       </template>
 
-      <!-- Not logged in + not guest (new visitor) -->
+      <!-- 3. Not logged in, not guest (New visitor) -->
       <template v-else>
         <button class="btn btn-primary-large" @click="goRegister">
           Get Premium Access Free
