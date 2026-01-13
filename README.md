@@ -383,7 +383,7 @@ The project is organized into two main parts: a Django REST backend and a Vue.js
 
 ``` frontend/vue-calculator-ui/
 ├── public/
-│   └── index.html
+│   └── favicon.ico
 │
 ├── src/
 │   ├── assets/
@@ -413,8 +413,10 @@ The project is organized into two main parts: a Django REST backend and a Vue.js
 │   │
 │   ├── App.vue               # Root Vue component
 │   └── main.js               # App bootstrap + CSRF initialization
-│
+│── index.html
 ├── package.json
+├── package-lock.json
+├── vercel.json
 ├── vite.config.js
 └── node_modules/ 
 ```
