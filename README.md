@@ -377,13 +377,6 @@ python manage.py test
 
 A single `CalculationHistory` table is used for both guest and authenticated users instead of maintaining separate tables.
 
-**Benefits:**
-- Avoids schema duplication
-- Simplifies queries and admin views
-- Makes future user conversion (guest → registered) straightforward
-
-
-
 ---
 
 ## Security Considerations
