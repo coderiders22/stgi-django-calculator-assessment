@@ -380,20 +380,31 @@ export default {
         }, 1200)
 
       } catch (err) {
-        // Handle registration errors
-        const errorData = err.response?.data
+  const data = err.response?.data
 
-        // Check for different error types from Django
-        if (errorData?.error) {
-          // Generic error message
-          this.message = errorData.error
-        } else if (errorData?.username) {
-          // Username validation error (e.g., already exists)
-          this.errors.username = errorData.username[0]
-        } else {
-          // Fallback error message
-          this.message = 'Something went wrong. Please try again.'
-        }
+  // Password validation errors (list from Django)
+  if (data?.password) {
+    this.errors.password = data.password.join(' ')
+  }
+
+  // Username errors
+  else if (data?.username) {
+    this.errors.username = data.username[0]
+  }
+
+  // Generic backend error
+  else if (data?.error) {
+    this.message = data.error
+    this.messageType = 'error'
+    this.showMessage = true
+  }
+
+  else {
+    this.message = 'Something went wrong. Please try again.'
+    this.messageType = 'error'
+    this.showMessage = true
+  }
+
 
         this.messageType = 'error'
         this.showMessage = true

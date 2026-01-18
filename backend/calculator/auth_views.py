@@ -2,7 +2,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
-
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -30,12 +31,9 @@ class CSRFView(APIView):
 # =========================
 # REGISTER
 # =========================
-class RegisterView(APIView):
-    """
-    Registers a new user and logs them in immediately.
-    No email/extra fields needed as per assessment scope.
-    """
 
+
+class RegisterView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = [CsrfExemptSessionAuthentication]
 
@@ -43,25 +41,44 @@ class RegisterView(APIView):
         username = request.data.get("username")
         password = request.data.get("password")
 
-        # Basic validation
         if not username or not password:
-            return Response({"error": "Username and password required"}, status=400)
+            return Response(
+                {"error": "Username and password are required"},
+                status=400
+            )
 
-        # Prevent duplicate users
         if User.objects.filter(username=username).exists():
-            return Response({"error": "User already exists"}, status=400)
+            return Response(
+                {"username": ["This username is already taken. Please choose another one."]},
+                status=400
+            )
 
-        # Create user
-        user = User.objects.create_user(username=username, password=password)
+        # 🔐 Strong password validation
+        try:
+            validate_password(password, user=User(username=username))
+        except ValidationError as e:
+            return Response(
+                {
+                    "password": e.messages
+                },
+                status=400
+            )
 
-        # Auto-login after registration
+        user = User.objects.create_user(
+            username=username,
+            password=password
+        )
+
         login(request, user)
         request.session.save()
 
-        return Response({
-            "message": "Registered & logged in successfully",
-            "username": user.username
-        })
+        return Response(
+            {
+                "message": "Account created successfully",
+                "username": user.username
+            },
+            status=201
+        )
 
 
 # =========================
